@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/welcome.css">
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <button class="open-btn" id="open-btn"><i class="fa-solid fa-bars"></i></button>
+    <h1 id="welcome-message">Plaisir2Courir</h1>
+    <div class="profile-container">
+        <img id="profile-pic" src="path/to/profile-pic.jpg" alt="Photo de Profil">
+    </div>
+</header>
+
+<!-- Sidebar Menu -->
+<div id="sidebar" class="sidebar">
+    <button class="close-btn" id="close-btn"><i class="fa-sharp fa-regular fa-circle-xmark"></i></button>
+    <ul>
+        <li><a href="#" id="a_activities">Mes Activités</a></li>
+        <li><a href="#" id="a_calendar">Calendrier</a></li>
+        <li><a href="#" id="a_messaging">Messagerie</a></li>
+        <li><a href="#" id="a_help">Aide</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div id="main-content">
+    <section id="activities" style="display: none">
+        <h2>Mes Activités</h2>
+        <!-- Contenu pour Mes Activités -->
+        <p>En cours de développement...</p>
+    </section>
+    <section id="section_calendar">
+        <!-- Contenu pour le Calendrier -->
+        <button id="add_activity"><i class="fa-solid fa-circle-plus"></i> ajouter activité</button>
+        <div id='calendar'></div>
+    </section>
+    <section id="messaging" style="display: none">
+        <h2>Messagerie</h2>
+        <!-- Contenu pour la Messagerie -->
+        <p>En cours de développement...</p>
+    </section>
+    <section id="help" style="display: none">
+        <h2>Aide</h2>
+        <!-- Contenu pour l'Aide -->
+        <form id="bug-report-form">
+            <label for="bug-description">Description du Bug:</label><br>
+            <textarea id="bug-description" required></textarea><br><br>
+
+            <input type="submit" value="Envoyer">
+            <div id="form-feedback"></div>
+        </form>
+    </section>
+</div>
+
+<script src="../js/welcome.js"></script>
+<script src="../js/calendar.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+</body>
+</html>

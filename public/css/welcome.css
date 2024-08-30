@@ -1,0 +1,129 @@
+/* Styles pour la page et le menu burger */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #4c98af;
+    color: #fff;
+    position: relative;
+}
+
+.open-btn {
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.profile-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#profile-pic {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -250px; /* Masquer le menu par défaut */
+    background-color: rgba(76, 155, 201, 0.8); /* Bleu clair transparent */
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optionnel : pour ajouter une ombre au menu */
+}
+
+#sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    padding: 8px 16px;
+    text-align: left;
+}
+
+#sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    background-color: #009dff; /* Couleur de survol du lien */
+}
+
+#sidebar .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    color: #fff;
+    cursor: pointer;
+    background: none; /* Pas de fond */
+    border: none;     /* Pas de contour */
+    padding: 0;       /* Supprime le padding par défaut */
+}
+
+#main-content {
+    padding: 16px;
+    margin: 60px 0 0;
+}
+
+section {
+    padding: 20px;
+    margin-top: 20px; /* Pour éviter que les sections ne se chevauchent */
+}
+
+
+/* calendrier */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#calendar {
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+#section_calendar {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+#add_activity {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    background-color: #4c98af;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-right: 40px;
+}

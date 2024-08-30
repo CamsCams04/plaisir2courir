@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Login & Inscription</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Connexion</h2>
+        <form id="loginForm" onsubmit="submitForm(event, 'login')">
+            <label for="loginInput">Nom d'utilisateur ou Adresse e-mail :</label><br>
+            <input type="text" id="loginInput" required><br><br>
+
+            <label for="loginPassword">Mot de passe :</label><br>
+            <input type="password" id="loginPassword" required><br><br>
+
+            <button type="submit">Se connecter</button><br><br>
+            <a class="form-toggle" href="#" onclick="toggleForm()">Pas encore inscrit ? S'inscrire</a>
+        </form>
+
+        <form id="registerForm" onsubmit="submitForm(event, 'register')" style="display:none;">
+            <h2>Inscription</h2>
+            <label for="registerUsername">Nom d'utilisateur :</label><br>
+            <input type="text" id="registerUsername" required><br><br>
+
+            <label for="registerEmail">Adresse e-mail :</label><br>
+            <input type="email" id="registerEmail" required><br><br>
+
+            <label for="registerPassword">Mot de passe :</label><br>
+            <input type="password" id="registerPassword" required><br><br>
+
+            <label for="confirmPassword">Confirmer le mot de passe :</label><br>
+            <input type="password" id="confirmPassword" required><br><br>
+
+            <button type="submit">S'inscrire</button>
+        </form>
+
+        <p id="resultMessage"></p>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

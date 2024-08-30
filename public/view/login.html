@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/login.css">
+    <!-- Importer Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js"></script>
+    <script type="module" src="../js/login.js"></script>
+    <script type="module" src="../js/script.js"></script>
+</head>
+<body>
+<div id="inscription" class="form-container" style="display: none;">
+    <h2>Inscription</h2>
+    <form id="signup-form" action="#">
+        <label for="username">Nom d'utilisateur :</label><br>
+        <input type="text" id="username" required><br><br>
+
+        <label for="email">Email :</label><br>
+        <input type="email" id="email" required><br><br>
+
+        <label for="password">Mot de passe :</label><br>
+        <div class="password-container">
+            <input type="password" id="password" required>
+            <i id="toggle-password-register" class="fa-solid fa-eye"></i>
+        </div><br><br>
+
+        <label for="confirm_password">Confirmer le mot de passe :</label><br>
+        <div class="password-container">
+            <input type="password" id="confirm_password" required>
+            <i id="toggle-password-confirm" class="fa-solid fa-eye"></i>
+        </div><br><br>
+
+        <div id="signup-error" class="error-message"></div>
+        <input type="submit" value="S'inscrire">
+    </form>
+    <a href="#" id="show-login">Déjà inscrit ? Se connecter !</a>
+</div>
+
+<div id="connexion" class="form-container">
+    <h2>Connexion</h2>
+    <form id="login-form" action="#">
+        <label for="login_input">Email :</label><br>
+        <input type="text" id="login_input" required><br><br>
+
+        <label for="login_password">Mot de passe :</label><br>
+        <div class="password-container">
+            <input type="password" id="login_password" required>
+            <i id="toggle-password-login" class="fa-solid fa-eye"></i>
+        </div><br><br>
+
+        <div id="login-error" class="error-message"></div>
+        <input type="submit" value="Se connecter">
+
+        <a style="color: #009dff; font-size: 12px;" href="#" id="forgot-password">Mot de passe oublié ?</a>
+    </form>
+    <a href="#" id="show-register">Inscription !</a>
+</div>
+</body>
+</html>
