@@ -84,11 +84,11 @@ header {
     border: none;     /* Pas de contour */
     padding: 0;       /* Supprime le padding par défaut */
 }
-
+/*
 #main-content {
     padding: 16px;
     margin: 60px 0 0;
-}
+}*/
 
 section {
     padding: 20px;
@@ -103,9 +103,36 @@ body {
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
 }
+
 #calendar {
-    max-width: 1100px;
-    margin: 40px auto;
+    width: 100%;
+    height: 70vh;
+    box-sizing: border-box;
+    margin-top: 50px;
+}
+
+@media (max-width: 600px) {
+    .fc-header-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .fc-header-toolbar .fc-title {
+        order: -1;
+        margin-bottom: 10px;
+    }
+
+    .fc-scroller {
+        overflow-x: auto;
+    }
+
+    .fc-next-button{
+        margin-left: 5px !important;
+    }
+
+    .fc-prev-button{
+        margin-right: 5px !important;
+    }
 }
 
 #section_calendar {
