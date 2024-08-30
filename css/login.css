@@ -15,10 +15,10 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px; /* Limite la largeur max pour éviter que le formulaire soit trop large sur de grands écrans */
+    max-width: 400px;
     text-align: center;
-    box-sizing: border-box; /* Assure que le padding soit inclus dans la largeur totale */
-    margin: 10px; /* Ajoute un peu d'espace autour du formulaire pour éviter qu'il touche les bords sur des petits écrans */
+    box-sizing: border-box;
+    margin: 10px;
 }
 
 h2 {

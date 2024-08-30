@@ -7,6 +7,7 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/welcome.css">
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
@@ -34,32 +35,119 @@
 <div id="main-content">
     <section id="activities" style="display: none">
         <h2>Mes Activités</h2>
-        <!-- Contenu pour Mes Activités -->
         <p>En cours de développement...</p>
     </section>
     <section id="section_calendar">
-        <!-- Contenu pour le Calendrier -->
-        <button id="add_activity"><i class="fa-solid fa-circle-plus"></i> ajouter activité</button>
+        <button id="add_activity" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityModal">
+            <i class="fa-solid fa-circle-plus"></i> Ajouter Activité
+        </button>
         <div id='calendar'></div>
+        <!-- Languette pour ouvrir la légende -->
+        <div id="legend-toggle" title="Afficher la légende">
+            <i class="fa-solid fa-info-circle"></i>
+        </div>
+
+        <!-- Légende des types d'événements -->
+        <div id="event-legend" style="display: none;">
+            <h5>Légende des Types</h5>
+            <ul>
+                <li><span class="badge réunion"></span> Réunion</li>
+                <li><span class="badge entrainement"></span> Entraînement</li>
+                <li><span class="badge compétition"></span> Compétition</li>
+            </ul>
+        </div>
+
     </section>
     <section id="messaging" style="display: none">
         <h2>Messagerie</h2>
-        <!-- Contenu pour la Messagerie -->
         <p>En cours de développement...</p>
     </section>
     <section id="help" style="display: none">
         <h2>Aide</h2>
-        <!-- Contenu pour l'Aide -->
         <form id="bug-report-form">
             <label for="bug-description">Description du Bug:</label><br>
             <textarea id="bug-description" required></textarea><br><br>
-
-            <input type="submit" value="Envoyer">
+            <input type="submit" value="Envoyer" class="btn btn-primary">
             <div id="form-feedback"></div>
         </form>
     </section>
 </div>
 
+<div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="activityModalLabel">Ajouter une Activité</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="activity-form">
+                    <!-- Nom de l'activité -->
+                    <div class="mb-3">
+                        <label for="activity-name" class="form-label">Nom de l'activité :</label>
+                        <input type="text" class="form-control" id="activity-name" name="activity-name" required>
+                    </div>
+
+                    <!-- Type d'activité -->
+                    <div class="mb-3">
+                        <label for="activity-type" class="form-label">Type d'activité :</label>
+                        <select class="form-select" id="activity-type" name="activity-type" required>
+                            <option value="" disabled selected>Sélectionner le type d'activité</option>
+                            <option value="reunion">Réunion</option>
+                            <option value="entrainement">Entrainement</option>
+                            <option value="competition">Compétition</option>
+                        </select>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="mb-3">
+                        <label for="activity-date" class="form-label">Date :</label>
+                        <input type="date" class="form-control" id="activity-date" name="activity-date" required>
+                    </div>
+
+                    <!-- Heure de début et de fin sur la même ligne -->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="activity-start-time" class="form-label">Heure de début :</label>
+                            <input type="time" class="form-control" id="activity-start-time" name="activity-start-time" required>
+                        </div>
+                        <div class="col">
+                            <label for="activity-end-time" class="form-label">Heure de fin :</label>
+                            <input type="time" class="form-control" id="activity-end-time" name="activity-end-time" required>
+                        </div>
+                    </div>
+
+                    <!-- Lieu -->
+                    <div class="mb-3">
+                        <label for="activity-location" class="form-label">Lieu :</label>
+                        <input type="text" class="form-control" id="activity-location" name="activity-location" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="activity-description" class="form-label">Description :</label>
+                        <textarea class="form-control" id="activity-description" name="activity-description"></textarea>
+                    </div>
+
+                    <!-- Répétition -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="activity-repeat" name="activity-repeat">
+                        <label class="form-check-label" for="activity-repeat">Répéter cette activité</label>
+                    </div>
+
+                    <!-- Bouton Ajouter -->
+                    <button type="submit" class="btn btn-primary" id="add_modal">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Scripts -->
+<script src="../js/jquery-3.7.1.min.js"></script>
+<script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../js/welcome.js"></script>
 <script src="../js/calendar.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
