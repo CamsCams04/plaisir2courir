@@ -180,7 +180,7 @@ body {
     margin-right: 40px;
 }
 
-#add_modal{
+#add_modal, #edit_activity, #edit_modal{
     background-color: #4c98af;
     border: none;
 }
@@ -261,4 +261,15 @@ body {
 
 .compétition {
     background-color: #dc3545;
+}
+
+/* event select */
+.selected-event {
+    border: 2px solid #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.selected-day {
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }

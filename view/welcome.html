@@ -16,7 +16,7 @@
     <button class="open-btn" id="open-btn"><i class="fa-solid fa-bars"></i></button>
     <h1 id="welcome-message">Plaisir2Courir</h1>
     <div class="profile-container">
-        <img id="profile-pic" src="path/to/profile-pic.jpg" alt="Photo de Profil">
+        <img id="profile-pic" src="" alt="Photo de Profil">
     </div>
 </header>
 
@@ -135,14 +135,166 @@
                         <label class="form-check-label" for="activity-repeat">Répéter cette activité</label>
                     </div>
 
-                    <!-- Bouton Ajouter -->
-                    <button type="submit" class="btn btn-primary" id="add_modal">Ajouter</button>
+                    <div class="modal-footer">
+                        <button id="add_modal" class="btn btn-primary">
+                            <i class="fa-solid fa-add"></i> Ajouter
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> Fermer
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="activityEditModal" tabindex="-1" aria-labelledby="activityEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="activityEditModalLabel">Modifier une Activité</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="activity-edit-form">
+                    <!-- Nom de l'activité -->
+                    <div class="mb-3">
+                        <label for="activity-edit-name" class="form-label">Nom de l'activité :</label>
+                        <input type="text" class="form-control" id="activity-edit-name" name="activity-name" required>
+                    </div>
+
+                    <!-- Type d'activité -->
+                    <div class="mb-3">
+                        <label for="activity-edit-type" class="form-label">Type d'activité :</label>
+                        <select class="form-select" id="activity-edit-type" name="activity-type" required>
+                            <option value="" disabled selected>Sélectionner le type d'activité</option>
+                            <option value="reunion">Réunion</option>
+                            <option value="entrainement">Entrainement</option>
+                            <option value="competition">Compétition</option>
+                        </select>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="mb-3">
+                        <label for="activity-edit-date" class="form-label">Date :</label>
+                        <input type="date" class="form-control" id="activity-edit-date" name="activity-date" required>
+                    </div>
+
+                    <!-- Heure de début et de fin sur la même ligne -->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="activity-edit-start-time" class="form-label">Heure de début :</label>
+                            <input type="time" class="form-control" id="activity-edit-start-time" name="activity-start-time" required>
+                        </div>
+                        <div class="col">
+                            <label for="activity-edit-end-time" class="form-label">Heure de fin :</label>
+                            <input type="time" class="form-control" id="activity-edit-end-time" name="activity-end-time" required>
+                        </div>
+                    </div>
+
+                    <!-- Lieu -->
+                    <div class="mb-3">
+                        <label for="activity-edit-location" class="form-label">Lieu :</label>
+                        <input type="text" class="form-control" id="activity-edit-location" name="activity-location" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="activity-edit-description" class="form-label">Description :</label>
+                        <textarea class="form-control" id="activity-edit-description" name="activity-description"></textarea>
+                    </div>
+
+                    <!-- Répétition -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="activity-edit-repeat" name="activity-repeat">
+                        <label class="form-check-label" for="activity-edit-repeat">Répéter cette activité</label>
+                    </div>
+
+                    <input type="hidden" id="activity-edit-id" name="activity-id">
+
+                    <div class="modal-footer">
+                        <button id="edit_modal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityEditModal">
+                            <i class="fa-solid fa-edit"></i> Modifier
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> Fermer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour afficher le résumé de l'activité -->
+<div class="modal fade" id="eventSummaryModal" tabindex="-1" aria-labelledby="eventSummaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center w-100 font-weight-bold" id="eventSummaryModalLabel">
+                    <span id="summary-name" class=""></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Type :</dt>
+                    <dd class="col-sm-8" id="summary-type"></dd>
+
+                    <dt class="col-sm-4">Date :</dt>
+                    <dd class="col-sm-8" id="summary-date"></dd>
+
+                    <dt class="col-sm-4">Heure de début :</dt>
+                    <dd class="col-sm-8" id="summary-start-time"></dd>
+
+                    <dt class="col-sm-4">Heure de fin :</dt>
+                    <dd class="col-sm-8" id="summary-end-time"></dd>
+
+                    <dt class="col-sm-4">Lieu :</dt>
+                    <dd class="col-sm-8" id="summary-location"></dd>
+
+                    <dt class="col-sm-4">Description :</dt>
+                    <dd class="col-sm-8" id="summary-description"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button id="edit_activity" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#activityEditModal">
+                    <i class="fa-solid fa-edit"></i> Modifier Activité
+                </button>
+                <button id="delete_activity" class="btn btn-danger d-none">
+                    <i class="fa-solid fa-trash"></i> Supprimer Activité
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i> Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmation pour Suppression -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la Suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer cette activité ?
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_delete" class="btn btn-danger">
+                    <i class="fa-solid fa-trash"></i> Supprimer
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i> Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- Scripts -->
