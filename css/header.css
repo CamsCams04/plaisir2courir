@@ -12,12 +12,13 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #4c98af;
+    background-color: #78ceea;
     color: #fff;
     position: relative;
 }
 
-#logo_title{
-    height: 60px;
+#logo_title {
+    max-width: 25%;
+    height: auto;
     margin: 4px;
 }
