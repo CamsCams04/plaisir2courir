@@ -18,7 +18,15 @@ header {
 }
 
 #logo_title {
-    max-width: 25%;
-    height: auto;
+    height: 4em;
+    width: auto;
     margin: 4px;
+}
+
+@media (max-width: 600px) {
+    #logo_title {
+        height: 2em;
+        width: auto;
+        margin: 4px;
+    }
 }
