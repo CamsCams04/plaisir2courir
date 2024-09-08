@@ -1,7 +1,7 @@
 // Importation des modules Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const date_modal = document.getElementById("activity-date");
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
     let selectedDate = null;
     let selectedEvent = null;
@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', function() {
             day: 'Jour'
         },
         events: [],
-        eventDidMount: function(info) {
+        eventDidMount: function (info) {
             const eventType = info.event.extendedProps.type;
             if (eventType) {
                 info.el.classList.add(eventType);
             }
         },
-        eventClick: function(info) {
+        eventClick: function (info) {
             if (selectedEvent && eventsAreEqual(selectedEvent, info.event)) {
                 selectedEvent = null;
                 info.el.classList.remove('selected-event');
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             populateSummaryModal(info.event);
         },
-        dateClick: function(info) {
+        dateClick: function (info) {
             const clickedDate = info.dateStr;
             if (selectedDate === clickedDate) {
                 selectedDate = null;
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('activity-edit-id').value = ''; // L'ID n'est pas nécessaire ici
     }
 
-    function populateSummaryModal(event) {
+    async function populateSummaryModal(event) {
         document.getElementById('summary-name').textContent = event.title || '';
         document.getElementById('summary-type').textContent = event.extendedProps.type || '';
         document.getElementById('summary-location').textContent = event.extendedProps.location || '';
@@ -159,14 +159,69 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             document.getElementById('summary-end-time').textContent = '';
         }
+
+        try {
+            const registrationsCollection = collection(db, 'registrations');
+            const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', event.id));
+
+            // Écoute en temps réel
+            onSnapshot(eventRegistrationsQuery, (snapshot) => {
+                document.getElementById("summary-inscription").textContent = snapshot.size;
+            }, (error) => {
+                console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
+            });
+
+            await updateRegistrationButton(event.id);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des inscriptions:", error);
+        }
     }
+
+
+    // Fonction check inscription
+    async function checkUserRegistered(eventId) {
+        try {
+            const userId = auth.currentUser.uid;
+            const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
+            return !registrationSnapshot.empty; // Retourne true si l'utilisateur est déjà inscrit
+        } catch (error) {
+            console.error('Erreur lors de la vérification de l\'inscription:', error);
+            return false;
+        }
+    }
+
+    // Fonction changement de bouton
+    async function updateRegistrationButton(eventId) {
+        const isRegistered = await checkUserRegistered(eventId);
+        const registerButton = document.getElementById('register_event');
+
+        if (isRegistered) {
+            registerButton.textContent = "Se désinscrire";
+            registerButton.classList.add('btn-outline-danger');
+            registerButton.classList.remove('btn-outline-primary');
+            registerButton.onclick = () => unsubscribeFromEvent(eventId); // Lien vers la fonction de désinscription
+        } else {
+            registerButton.textContent = 'S\'inscrire';
+            registerButton.classList.add('btn-outline-primary');
+            registerButton.classList.remove('btn-outline-danger');
+            registerButton.onclick = () => subscribeToEvent(eventId); // Lien vers la fonction d'inscription
+        }
+    }
+
+
 
     // Charger les événements depuis Firestore pour l'utilisateur connecté
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            try {
-                const snapshot = await getDocs(query(collection(db, 'events'), where('userId', '==', user.uid)));
-                snapshot.forEach(doc => {
+            const eventsCollection = collection(db, 'events');
+            const userEventsQuery = query(eventsCollection, where('userId', '==', user.uid));
+
+            // Écoute en temps réel
+            onSnapshot(userEventsQuery, (snapshot) => {
+                // Supprimer tous les événements du calendrier avant de les recharger
+                calendar.removeAllEvents();
+
+                snapshot.forEach((doc) => {
                     const eventData = doc.data();
                     calendar.addEvent({
                         id: doc.id,
@@ -181,13 +236,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         userId: eventData.userId
                     });
                 });
-            } catch (error) {
-                console.error('Erreur lors de la récupération des événements:', error);
-            }
+            }, (error) => {
+                console.error('Erreur lors de la récupération des événements en temps réel:', error);
+            });
         } else {
             console.log('Utilisateur non authentifié');
         }
     });
+
 
     // Fonction pour ajouter un événement
     document.getElementById('activity-form').addEventListener('submit', async function(event) {
@@ -201,34 +257,54 @@ document.addEventListener('DOMContentLoaded', function() {
         const location = document.getElementById('activity-location').value;
         const description = document.getElementById('activity-description').value;
         const repeat = document.getElementById('activity-repeat').checked;
+        const nb_repeat = parseInt(document.getElementById("repeat-weeks").value, 10);
 
-        const newEvent = {
-            title: name,
-            start: `${date}T${startTime}`,
-            end: `${date}T${endTime}`,
-            description: description,
-            location: location,
-            extendedProps: {
-                type: type
-            },
-            repeat: repeat,
-            userId: auth.currentUser.uid
-        };
+        const initialStartDate = new Date(`${date}T${startTime}`);
+        const initialEndDate = new Date(`${date}T${endTime}`);
 
         try {
-            const docRef = await addDoc(collection(db, 'events'), newEvent);
-            calendar.addEvent({
-                id: docRef.id,
-                title: name,
-                start: newEvent.start,
-                end: newEvent.end,
-                description: description,
-                location: location,
-                extendedProps: {
-                    type: type
-                },
-                userId: auth.currentUser.uid
-            });
+            console.log(`Création d'événements : ${nb_repeat} répétitions`);
+            for (let i = 0; i < nb_repeat; i++) {
+                const currentStartDate = new Date(initialStartDate);
+                const currentEndDate = new Date(initialEndDate);
+                currentStartDate.setDate(currentStartDate.getDate() + (i * 7));
+                currentEndDate.setDate(currentEndDate.getDate() + (i * 7));
+
+                // Formatage des dates en ISO string
+                const formattedStart = currentStartDate.toISOString();
+                const formattedEnd = currentEndDate.toISOString();
+
+                console.log(`Ajout événement - Début: ${formattedStart}, Fin: ${formattedEnd}`);
+
+                const newEvent = {
+                    title: name,
+                    start: formattedStart,
+                    end: formattedEnd,
+                    description: description,
+                    location: location,
+                    extendedProps: {
+                        type: type
+                    },
+                    repeat: repeat,
+                    userId: auth.currentUser.uid
+                };
+
+                const docRef = await addDoc(collection(db, 'events'), newEvent);
+
+                calendar.addEvent({
+                    id: docRef.id,
+                    title: name,
+                    start: formattedStart,
+                    end: formattedEnd,
+                    description: description,
+                    location: location,
+                    extendedProps: {
+                        type: type
+                    },
+                    userId: auth.currentUser.uid
+                });
+            }
+
             const modal = bootstrap.Modal.getInstance(document.getElementById('activityModal'));
             modal.hide();
         } catch (error) {
@@ -240,6 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour éditer un événement
     document.getElementById('activity-edit-form').addEventListener('submit', async function(event) {
         event.preventDefault();
+
         const name = document.getElementById('activity-edit-name').value;
         const type = document.getElementById('activity-edit-type').value;
         const date = document.getElementById('activity-edit-date').value;
@@ -248,6 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const location = document.getElementById('activity-edit-location').value;
         const description = document.getElementById('activity-edit-description').value;
         const repeat = document.getElementById('activity-edit-repeat').checked;
+        const nb_repeat = parseInt(document.getElementById('repeat-edit-weeks').value, 10);
+
+        console.log(nb_repeat);
 
         const updatedEvent = {
             title: name,
@@ -267,11 +347,63 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Erreur : Aucun événement sélectionné.');
             return;
         }
+
         try {
-            const eventId = selectedEvent.id; // Utiliser l'ID de l'événement sélectionné
+            const eventId = selectedEvent.id;
+
+            // Supprimer les anciens événements répétés sauf l'événement principal
+            if (selectedEvent.extendedProps.repeat) {
+                const querySnapshot = await getDocs(query(
+                    collection(db, 'events'),
+                    where('userId', '==', auth.currentUser.uid),
+                    where('repeat', '==', true),
+                    where('start', '>', selectedEvent.start), // On garde l'événement principal
+                    where('start', '<=', new Date(selectedEvent.end).toISOString())
+                ));
+
+                const deletePromises = [];
+                querySnapshot.forEach(doc => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                });
+                await Promise.all(deletePromises);
+            }
+
+            // Mettre à jour l'événement principal
             const eventRef = doc(db, 'events', eventId);
             await updateDoc(eventRef, updatedEvent);
 
+            // Ajouter les nouveaux événements répétés si nécessaire
+            if (repeat) {
+                const initialStartDate = new Date(updatedEvent.start);
+                const initialEndDate = new Date(updatedEvent.end);
+
+                for (let i = 1; i < nb_repeat; i++) { // Commence à 1 pour éviter de recréer l'événement principal
+                    const currentStartDate = new Date(initialStartDate);
+                    const currentEndDate = new Date(initialEndDate);
+                    currentStartDate.setDate(currentStartDate.getDate() + (i * 7)); // Ajouter 7 jours pour chaque itération
+                    currentEndDate.setDate(currentEndDate.getDate() + (i * 7)); // Ajouter 7 jours pour chaque itération
+
+                    const formattedStart = currentStartDate.toISOString();
+                    const formattedEnd = currentEndDate.toISOString();
+
+                    const newEvent = {
+                        title: name,
+                        start: formattedStart,
+                        end: formattedEnd,
+                        description: description,
+                        location: location,
+                        extendedProps: {
+                            type: type
+                        },
+                        repeat: repeat,
+                        userId: auth.currentUser.uid
+                    };
+
+                    await addDoc(collection(db, 'events'), newEvent);
+                }
+            }
+
+            // Mettre à jour l'événement principal sur le calendrier
             selectedEvent.setProp('title', name);
             selectedEvent.setProp('start', updatedEvent.start);
             selectedEvent.setProp('end', updatedEvent.end);
@@ -322,6 +454,37 @@ document.addEventListener('DOMContentLoaded', function() {
             center: isMobile ? 'prev,dayGridMonth,timeGridWeek,timeGridDay,next' : 'title',
             right: isMobile ? '' : 'dayGridMonth,timeGridWeek,timeGridDay'
         });
+    }
+
+    // Fonction inscription
+    async function subscribeToEvent(eventId) {
+        try {
+            const userId = auth.currentUser.uid;
+            await addDoc(collection(db, 'registrations'), {
+                userId: userId,
+                eventId: eventId
+            });
+            updateRegistrationButton(eventId); // Met à jour le bouton après inscription
+        } catch (error) {
+            console.error('Erreur lors de l\'inscription:', error);
+            alert('Erreur lors de l\'inscription. Veuillez réessayer.');
+        }
+    }
+
+    // Fonction désinscription
+    async function unsubscribeFromEvent(eventId) {
+        try {
+            const userId = auth.currentUser.uid;
+            const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
+            if (!registrationSnapshot.empty) {
+                const registrationId = registrationSnapshot.docs[0].id; // Récupérer l'ID du document d'inscription
+                await deleteDoc(doc(db, 'registrations', registrationId));
+                updateRegistrationButton(eventId); // Met à jour le bouton après désinscription
+            }
+        } catch (error) {
+            console.error('Erreur lors de la désinscription:', error);
+            alert('Erreur lors de la désinscription. Veuillez réessayer.');
+        }
     }
 
     // Appel initial pour définir la disposition correcte

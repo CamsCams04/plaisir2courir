@@ -1,0 +1,43 @@
+html, body{
+    width: 100%;
+    height: 100%;
+}
+
+main{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#affichage{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#logo_princ{
+    width: 50%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 15%;
+}
+
+#logo_rond{
+    width: 5%;
+    background-color: white;
+    border-radius: 50%;
+}
+
+#header_accueil {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header_accueil h1 {
+    margin: 0 auto;
+    flex-grow: 1;
+    text-align: center;
+}
