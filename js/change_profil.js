@@ -204,16 +204,43 @@ document.getElementById("file_img").addEventListener("change", () => {
     if (fileInput) {
         const reader = new FileReader();
         reader.onload = function(event) {
-            const base64String = event.target.result;
-            // Met à jour les images de profil
-            document.getElementById("profile-pic").src = base64String;
-            document.getElementById("change_img").src = base64String;
-            // Stocke la valeur base64 dans un attribut data
-            document.getElementById("file_img").dataset.base64 = base64String;
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                const canvas = document.createElement("canvas");
+                const maxWidth = 800; // Définissez une largeur maximale pour l'image
+                const maxHeight = 800; // Définissez une hauteur maximale pour l'image
+                let width = img.width;
+                let height = img.height;
+
+                // Redimensionner l'image si elle dépasse les dimensions maximales
+                if (width > maxWidth || height > maxHeight) {
+                    if (width > height) {
+                        height = Math.floor(height * (maxWidth / width));
+                        width = maxWidth;
+                    } else {
+                        width = Math.floor(width * (maxHeight / height));
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convertir le canvas en base64
+                const base64String = canvas.toDataURL("image/jpeg", 0.7); // Qualité de 70%
+
+                // Mettre à jour les images de profil
+                document.getElementById("profile-pic").src = base64String;
+                document.getElementById("change_img").src = base64String;
+                document.getElementById("file_img").dataset.base64 = base64String;
+            };
         };
         reader.readAsDataURL(fileInput);
     } else {
         alert("Veuillez sélectionner une image.");
     }
 });
-
