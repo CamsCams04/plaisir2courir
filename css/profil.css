@@ -69,3 +69,9 @@ html, body{
 #form_profil input {
     width: 100%;
 }
+
+@media (max-width: 600px) {
+    #modify_profil{
+        width: 100%;
+    }
+}
