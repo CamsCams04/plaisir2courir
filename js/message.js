@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const openBtn = document.getElementById("open_users");
     const userList = document.querySelector(".user-list");
     const chatArea = document.querySelector(".chat-area");
+    const sendMessageBtn = document.getElementById("send-message");
 
     openBtn.addEventListener("click", () => {
         if (userList.classList.contains("show")) {
@@ -27,4 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
             openBtn.style.color = "black";
         }
     });
+    function updateButtonText() {
+        const screenWidth = window.innerWidth;
+
+        if (screenWidth < 500) {
+            sendMessageBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i>`;
+        } else if (screenWidth < 700) {
+            sendMessageBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i>`;
+        } else {
+            sendMessageBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i>
+                                            Envoyer`;
+        }
+    }
+
+    updateButtonText();
+
+    window.addEventListener("resize", updateButtonText);
 });
