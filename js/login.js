@@ -17,7 +17,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 // Gestionnaire d'événement pour l'inscription
 document.getElementById('signup-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -37,6 +36,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
         const user = userCredential.user;
 
         await setDoc(doc(db, 'users', user.uid), {
+            id: user.uid,
             username: username,
             email: email
         });

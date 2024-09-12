@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/welcome.css">
     <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/help.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
@@ -17,7 +18,7 @@
     <button class="open-btn" id="open-btn"><i class="fa-solid fa-bars"></i></button>
     <img id="logo_title" src="../img/plaisir%20de%20courir.png" alt="Logo plaisir2courir">
     <div class="profile-container">
-        <img id="profile-pic" src="" alt="Photo de Profil">
+        <img id="profile-pic" src="../img/photo_profil.png" alt="Photo de Profil">
     </div>
 </header>
 
@@ -35,8 +36,21 @@
 <!-- Main Content -->
 <div id="main-content">
     <section id="activities" style="display: none">
-        <h2>Mes Activités</h2>
-        <p>En cours de développement...</p>
+        <div id='calendar_activitie'></div>
+        <!-- Languette pour ouvrir la légende -->
+        <div id="legend-toggle-activitie" title="Afficher la légende">
+            <i class="fa-solid fa-info-circle"></i>
+        </div>
+
+        <!-- Légende des types d'événements -->
+        <div id="event-legend-activitie" style="display: none;">
+            <h5>Légende des Types</h5>
+            <ul>
+                <li><span class="badge réunion"></span> Réunion</li>
+                <li><span class="badge entrainement"></span> Entraînement</li>
+                <li><span class="badge compétition"></span> Compétition</li>
+            </ul>
+        </div>
     </section>
     <section id="section_calendar">
         <button id="add_activity" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityModal">
@@ -64,13 +78,15 @@
         <p>En cours de développement...</p>
     </section>
     <section id="help" style="display: none">
-        <h2>Aide</h2>
-        <form id="bug-report-form">
-            <label for="bug-description">Description du Bug:</label><br>
-            <textarea id="bug-description" required></textarea><br><br>
-            <input type="submit" value="Envoyer" class="btn btn-primary">
-            <div id="form-feedback"></div>
-        </form>
+        <div id="div_help">
+            <h2>Aide</h2>
+            <form id="bug-report-form">
+                <label for="bug-description">Description du Bug:</label><br>
+                <textarea id="bug-description" required></textarea><br><br>
+                <input type="submit" value="Envoyer" class="btn btn-primary">
+                <div id="form-feedback"></div>
+            </form>
+        </div>
     </section>
 </div>
 
@@ -275,6 +291,9 @@
 
                     <dt class="col-sm-4">Nombre d'inscription :</dt>
                     <dd class="col-sm-8" id="summary-inscription"></dd>
+
+                    <dt class="col-sm-4">Créateur :</dt>
+                    <dd class="col-sm-8" id="summary-creator"></dd>
                 </dl>
                 <button id="register_event" class="btn btn-outline-primary">S'inscrire</button>
             </div>
@@ -320,9 +339,10 @@
 <!-- Scripts -->
 <script src="../js/jquery-3.7.1.min.js"></script>
 <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="../js/welcome.js"></script>
+<script type="module" src="../js/welcome.js"></script>
 <script type="module" src="../js/calendar.js"></script>
 <script type="module" src="../js/repeat.js"></script>
+<script type="module" src="../js/input_profil.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 </body>
 </html>

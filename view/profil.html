@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/profil.css">
+    <link rel="stylesheet" href="../css/welcome.css">
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <button class="open-btn" id="open-btn"><i class="fa-solid fa-bars"></i></button>
+    <img id="logo_title" src="../img/plaisir%20de%20courir.png" alt="Logo plaisir2courir">
+    <div class="profile-container">
+        <img id="profile-pic" src="../img/photo_profil.png" alt="Photo de Profil">
+    </div>
+</header>
+
+<!-- Sidebar Menu -->
+<div id="sidebar" class="sidebar">
+    <button class="close-btn" id="close-btn"><i class="fa-sharp fa-regular fa-circle-xmark"></i></button>
+    <ul>
+        <li><a href="#" id="a_activities">Mes Activités</a></li>
+        <li><a href="#" id="a_calendar">Calendrier</a></li>
+        <li><a href="#" id="a_messaging">Messagerie</a></li>
+        <li><a href="#" id="a_help">Aide</a></li>
+    </ul>
+</div>
+
+<main id="main_profil">
+    <section class="" id="modify_profil">
+        <div id="div_img">
+            <img id="change_img" src="../img/photo_profil.png" alt="Photo de Profil">
+            <input id="file_img" type="file" class="d-none">
+        </div>
+
+        <form id="form_profil">
+            <div class="mb-3">
+                <label for="username" class="form-label">Nom / Pseudo :</label>
+                <input type="text" class="form-control" id="username" placeholder="Nom / Pseudo">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Adresse e-mail :</label>
+                <input type="email" class="form-control" id="email" placeholder="mail@mail.com">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe :</label>
+                <input type="password" class="form-control" id="password" placeholder="Mot de passe">
+            </div>
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirmer le mot de passe :</label>
+                <input type="password" class="form-control" id="confirm_password" placeholder="Confirmer Mot de passe">
+            </div>
+            <div id="profile-error" class="error-message"></div>
+            <div id="profile-success" class="error-message"></div>
+            <button type="submit" class="btn btn-primary">Modifier</button>
+        </form>
+        <button class="btn btn-outline-danger" id="logout-btn">Deconnexion</button>
+        <button class="btn btn-danger" id="delete_account">Supprimer</button>
+    </section>
+
+</main>
+
+
+<!-- Scripts -->
+<script src="../js/jquery-3.7.1.min.js"></script>
+<script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+<script type="module" src="../js/input_profil.js"></script>
+<script type="module" src="../js/welcome.js"></script>
+<script type="module" src="../js/change_profil.js"></script>
+</body>
+</html>

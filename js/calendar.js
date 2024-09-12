@@ -1,7 +1,7 @@
 // Importation des modules Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId  } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -175,6 +175,29 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error("Erreur lors de la récupération des inscriptions:", error);
         }
+        try {
+            const userId = event.extendedProps.userId;
+            if (userId) {
+                const usersCollection = collection(db, 'users');
+                const creatorUserQuery = query(usersCollection, where('id', '==', userId));
+
+                const querySnapshot = await getDocs(creatorUserQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        const userData = doc.data();
+                        document.getElementById('summary-creator').textContent = userData.username || 'Nom inconnu';
+                    });
+                } else {
+                    console.error('Aucun utilisateur trouvé pour cet ID.');
+                    document.getElementById('summary-creator').textContent = 'Utilisateur inconnu';
+                }
+            } else {
+                console.error('User ID est indéfini.');
+                document.getElementById('summary-creator').textContent = 'Utilisateur inconnu';
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération du créateur :", error);
+        }
     }
 
 
@@ -208,41 +231,33 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Charger tous les événements depuis Firestore
+    const eventsCollection = collection(db, 'events');
 
+    // Écoute en temps réel pour tous les événements
+    onSnapshot(eventsCollection, (snapshot) => {
+        // Supprimer tous les événements du calendrier avant de les recharger
+        calendar.removeAllEvents();
 
-    // Charger les événements depuis Firestore pour l'utilisateur connecté
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            const eventsCollection = collection(db, 'events');
-            const userEventsQuery = query(eventsCollection, where('userId', '==', user.uid));
-
-            // Écoute en temps réel
-            onSnapshot(userEventsQuery, (snapshot) => {
-                // Supprimer tous les événements du calendrier avant de les recharger
-                calendar.removeAllEvents();
-
-                snapshot.forEach((doc) => {
-                    const eventData = doc.data();
-                    calendar.addEvent({
-                        id: doc.id,
-                        title: eventData.title,
-                        start: eventData.start,
-                        end: eventData.end,
-                        description: eventData.description,
-                        location: eventData.location,
-                        extendedProps: {
-                            type: eventData.extendedProps.type
-                        },
-                        userId: eventData.userId
-                    });
-                });
-            }, (error) => {
-                console.error('Erreur lors de la récupération des événements en temps réel:', error);
+        snapshot.forEach((doc) => {
+            const eventData = doc.data();
+            calendar.addEvent({
+                id: doc.id,
+                title: eventData.title,
+                start: eventData.start,
+                end: eventData.end,
+                description: eventData.description,
+                location: eventData.location,
+                extendedProps: {
+                    type: eventData.extendedProps.type
+                },
+                userId: eventData.userId
             });
-        } else {
-            console.log('Utilisateur non authentifié');
-        }
+        });
+    }, (error) => {
+        console.error('Erreur lors de la récupération des événements en temps réel:', error);
     });
+
 
 
     // Fonction pour ajouter un événement
@@ -499,11 +514,335 @@ document.addEventListener('DOMContentLoaded', function () {
     const legendToggle = document.getElementById('legend-toggle');
     const eventLegend = document.getElementById('event-legend');
 
-    legendToggle.addEventListener('click', function() {
+    const legendToggleActivitie = document.getElementById('legend-toggle-activitie');
+    const eventLegendActivitie = document.getElementById('event-legend-activitie');
+
+// Fonction pour afficher ou masquer l'élément `event-legend`
+    function toggleLegend(eventLegend) {
         if (eventLegend.style.display === 'none' || eventLegend.style.display === '') {
             eventLegend.style.display = 'block';
         } else {
             eventLegend.style.display = 'none';
         }
+    }
+
+    // Gestionnaire de clic pour le bouton `legend-toggle`
+        legendToggle.addEventListener('click', function(event) {
+            event.stopPropagation(); // Empêche la propagation du clic au document
+            toggleLegend(eventLegend);
+        });
+
+    // Gestionnaire de clic pour le bouton `legend-toggle-activitie`
+    legendToggleActivitie.addEventListener('click', function(event) {
+        event.stopPropagation(); // Empêche la propagation du clic au document
+        toggleLegend(eventLegendActivitie);
     });
+
+    // Fonction pour gérer le clic sur le document
+        function handleClickOutside(event) {
+            if (!eventLegend.contains(event.target) && event.target !== legendToggle) {
+                eventLegend.style.display = 'none';
+            }
+            if (!eventLegendActivitie.contains(event.target) && event.target !== legendToggleActivitie) {
+                eventLegendActivitie.style.display = 'none';
+            }
+        }
+
+    // Ajouter le gestionnaire de clic au document
+    document.addEventListener('click', handleClickOutside);
+
+    // Assurez-vous de masquer `event-legend` lorsqu'il est initialement invisible
+    eventLegend.style.display = 'none';
+    eventLegendActivitie.style.display = 'none';
 });
+
+// Fonction pour charger les activités du calendrier
+export async function loadCalendarActivities() {
+    let calendarEl = document.getElementById('calendar_activitie');
+    let selectedDate = null;
+    let selectedEvent = null;
+
+    // Créer une instance de FullCalendar
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'fr',
+        buttonText: {
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        },
+        events: [], // Initialisation vide des événements
+        eventDidMount: function (info) {
+            const eventType = info.event.extendedProps.type;
+            if (eventType) {
+                info.el.classList.add(eventType);
+            }
+        },
+        eventClick: function (info) {
+            if (selectedEvent && eventsAreEqual(selectedEvent, info.event)) {
+                selectedEvent = null;
+                info.el.classList.remove('selected-event');
+                resetEventModal();
+            } else {
+                if (selectedEvent) {
+                    let prevEl = document.querySelector('.selected-event');
+                    if (prevEl) {
+                        prevEl.classList.remove('selected-event');
+                    }
+                }
+                selectedEvent = info.event;
+                info.el.classList.add('selected-event');
+                populateEventModal(info.event);
+            }
+            /*if (auth.currentUser.uid === info.event.extendedProps.userId) {
+                document.getElementById("edit_activity").classList.remove("d-none");
+                document.getElementById("delete_activity").classList.remove("d-none");
+            } else {
+                document.getElementById("edit_activity").classList.add("d-none");
+                document.getElementById("delete_activity").classList.add("d-none");
+            }*/
+            const summaryModal = new bootstrap.Modal(document.getElementById('eventSummaryModal'));
+            summaryModal.show();
+
+            document.getElementById('edit_activity').addEventListener("click", () => {
+                populateEventModal(info.event);
+            });
+            populateSummaryModal(info.event);
+        },
+        dateClick: function (info) {
+            const clickedDate = info.dateStr;
+            if (selectedDate === clickedDate) {
+                selectedDate = null;
+                date_modal.value = '';
+                info.dayEl.classList.remove('selected-day');
+            } else {
+                if (selectedDate) {
+                    const prevSelectedEl = document.querySelector(`[data-date="${selectedDate}"]`);
+                    if (prevSelectedEl) {
+                        prevSelectedEl.classList.remove('selected-day');
+                    }
+                }
+                selectedDate = clickedDate;
+                date_modal.value = clickedDate;
+                info.dayEl.classList.add('selected-day')
+            }
+        }
+    });
+
+    // Récupérer les événements de Firestore
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            console.error("L'utilisateur n'est pas connecté.");
+            return;
+        }
+
+        // Référence à la collection des inscriptions
+        const registrationRef = collection(db, 'registrations');
+        const queryRegistration = query(registrationRef, where("userId", "==", user.uid));
+
+        // Obtenir les inscriptions de l'utilisateur
+        const querySnapshot = await getDocs(queryRegistration);
+
+        if (querySnapshot.empty) {
+            console.log("Aucune inscription trouvée pour cet utilisateur.");
+            calendar.render();
+            return;
+        }
+
+        // Collecter les IDs des événements auxquels l'utilisateur est inscrit
+        const eventIds = querySnapshot.docs.map(doc => doc.data().eventId);
+
+        if (eventIds.length === 0) {
+            console.log("Aucun événement trouvé pour les inscriptions de l'utilisateur.");
+            calendar.render();
+            return;
+        }
+
+        // Référence à la collection des événements
+        const eventsRef = collection(db, 'events');
+
+        // Créer une requête pour obtenir les événements basés sur les IDs collectés
+        const eventsQuery = query(eventsRef, where(documentId(), "in", eventIds));
+
+        // Obtenir les événements
+        const eventsSnapshot = await getDocs(eventsQuery);
+
+        if (eventsSnapshot.empty) {
+            console.log("Aucune events trouvée.");
+        } else {
+            eventsSnapshot.forEach((doc) => {
+                const eventData = doc.data();
+                calendar.addEvent({
+                    id: doc.id,
+                    title: eventData.title,
+                    start: eventData.start,
+                    end: eventData.end,
+                    description: eventData.description,
+                    location: eventData.location,
+                    extendedProps: {
+                        type: eventData.extendedProps.type
+                    },
+                    userId: eventData.userId
+                });
+            });
+        }
+        calendar.render();
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des activités du calendrier : ", error);
+    }
+
+    function eventsAreEqual(event1, event2) {
+        return event1.start.toISOString() === event2.start.toISOString() &&
+            event1.end.toISOString() === event2.end.toISOString() &&
+            event1.title === event2.title;
+    }
+
+    function resetEventModal() {
+        document.getElementById('activity-edit-name').value = '';
+        document.getElementById('activity-edit-description').value = '';
+        document.getElementById('activity-edit-type').value = '';
+        document.getElementById('activity-edit-location').value = '';
+        document.getElementById('activity-edit-date').value = '';
+        document.getElementById('activity-edit-start-time').value = '';
+        document.getElementById('activity-edit-end-time').value = '';
+        document.getElementById('activity-edit-repeat').checked = false;
+        document.getElementById('activity-edit-id').value = ''; // Réinitialiser l'ID
+    }
+
+    function populateEventModal(event) {
+        document.getElementById('activity-edit-name').value = event.title || '';
+        document.getElementById('activity-edit-description').value = event.extendedProps.description || '';
+        document.getElementById('activity-edit-type').value = event.extendedProps.type || '';
+        document.getElementById('activity-edit-location').value = event.extendedProps.location || '';
+        if (event.start) {
+            let startDate = new Date(event.start);
+            document.getElementById('activity-edit-date').value = startDate.toISOString().split('T')[0];
+            document.getElementById('activity-edit-start-time').value = startDate.toTimeString().substring(0, 5);
+        } else {
+            document.getElementById('activity-edit-date').value = '';
+            document.getElementById('activity-edit-start-time').value = '';
+        }
+        if (event.end) {
+            let endDate = new Date(event.end);
+            document.getElementById('activity-edit-end-time').value = endDate.toTimeString().substring(0, 5);
+        } else {
+            document.getElementById('activity-edit-end-time').value = '';
+        }
+        document.getElementById('activity-edit-repeat').checked = event.extendedProps.repeat || false;
+        document.getElementById('activity-edit-id').value = ''; // L'ID n'est pas nécessaire ici
+    }
+
+    async function populateSummaryModal(event) {
+        document.getElementById('summary-name').textContent = event.title || '';
+        document.getElementById('summary-type').textContent = event.extendedProps.type || '';
+        document.getElementById('summary-location').textContent = event.extendedProps.location || '';
+        document.getElementById('summary-description').textContent = event.extendedProps.description || '';
+
+        if (event.start) {
+            let startDate = new Date(event.start);
+            document.getElementById('summary-date').textContent = startDate.toLocaleDateString('fr-FR');
+            document.getElementById('summary-start-time').textContent = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        } else {
+            document.getElementById('summary-date').textContent = '';
+            document.getElementById('summary-start-time').textContent = '';
+        }
+        if (event.end) {
+            let endDate = new Date(event.end);
+            document.getElementById('summary-end-time').textContent = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        } else {
+            document.getElementById('summary-end-time').textContent = '';
+        }
+
+        try {
+            const registrationsCollection = collection(db, 'registrations');
+            const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', event.id));
+
+            // Écoute en temps réel
+            onSnapshot(eventRegistrationsQuery, (snapshot) => {
+                document.getElementById("summary-inscription").textContent = snapshot.size;
+            }, (error) => {
+                console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
+            });
+
+            await updateRegistrationButton(event.id);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des inscriptions:", error);
+        }
+        try {
+            const userId = event.extendedProps.userId;
+            if (userId) {
+                const usersCollection = collection(db, 'users');
+                const creatorUserQuery = query(usersCollection, where('id', '==', userId));
+
+                const querySnapshot = await getDocs(creatorUserQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        const userData = doc.data();
+                        document.getElementById('summary-creator').textContent = userData.username || 'Nom inconnu';
+                    });
+                } else {
+                    console.error('Aucun utilisateur trouvé pour cet ID.');
+                    document.getElementById('summary-creator').textContent = 'Utilisateur inconnu';
+                }
+            } else {
+                console.error('User ID est indéfini.');
+                document.getElementById('summary-creator').textContent = 'Utilisateur inconnu';
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération du créateur :", error);
+        }
+    }
+
+    // Fonction check inscription
+    async function checkUserRegistered(eventId) {
+        try {
+            const userId = auth.currentUser.uid;
+            const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
+            return !registrationSnapshot.empty; // Retourne true si l'utilisateur est déjà inscrit
+        } catch (error) {
+            console.error('Erreur lors de la vérification de l\'inscription:', error);
+            return false;
+        }
+    }
+
+    // Fonction désinscription
+    async function unsubscribeFromEvent(eventId) {
+        try {
+            const userId = auth.currentUser.uid;
+            const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
+            if (!registrationSnapshot.empty) {
+                const registrationId = registrationSnapshot.docs[0].id; // Récupérer l'ID du document d'inscription
+                await deleteDoc(doc(db, 'registrations', registrationId));
+                updateRegistrationButton(eventId); // Met à jour le bouton après désinscription
+            }
+        } catch (error) {
+            console.error('Erreur lors de la désinscription:', error);
+            alert('Erreur lors de la désinscription. Veuillez réessayer.');
+        }
+    }
+
+    // Fonction changement de bouton
+    async function updateRegistrationButton(eventId) {
+        const isRegistered = await checkUserRegistered(eventId);
+        const registerButton = document.getElementById('register_event');
+
+        if (isRegistered) {
+            registerButton.textContent = "Se désinscrire";
+            registerButton.classList.add('btn-outline-danger');
+            registerButton.classList.remove('btn-outline-primary');
+            registerButton.onclick = () => unsubscribeFromEvent(eventId); // Lien vers la fonction de désinscription
+        } else {
+            registerButton.classList.add("d-none");
+            await loadCalendarActivities();
+        }
+    }
+}
+

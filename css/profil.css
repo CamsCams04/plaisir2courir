@@ -1,0 +1,71 @@
+html, body{
+    width: 100%;
+    height: 100%;
+}
+
+#main_profil{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#modify_profil{
+    box-sizing: border-box;
+    margin-top: 50px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 60%;
+}
+
+#change_img{
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#form_profil{
+    margin-bottom: 10px;
+}
+
+#logout-btn, #delete_account{
+    margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+    #change_img{
+        width: 100px;
+        height: 100px;
+    }
+}
+
+#profile-error {
+    color: red;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+#profile-success{
+    color: #00b600;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.form-label {
+    text-align: left;
+    display: block;
+    font-weight: bold;
+}
+
+#form_profil input {
+    width: 100%;
+}
