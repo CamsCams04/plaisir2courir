@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/welcome.css">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/help.css">
+    <link rel="stylesheet" href="../css/messagerie.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
@@ -74,8 +75,41 @@
 
     </section>
     <section id="messaging" style="display: none">
-        <h2>Messagerie</h2>
-        <p>En cours de développement...</p>
+        <div class="messaging-container">
+            <button class="open-btn" id="open_users"><i class="fa-solid fa-bars"></i></button>
+            <!-- Liste des utilisateurs -->
+            <div class="user-list d-none" id="user-list">
+                <h3 id="header_discussion">Discussions</h3>
+                <ul>
+                    <li data-user-id="user1" class="user-item">
+                        <img class="photo_profil" src="../img/photo_profil.png" alt="photo de profil">
+                        Utilisateur 1
+                    </li>
+                    <li data-user-id="user1" class="user-item">
+                        <img class="photo_profil" src="../img/photo_profil.png" alt="photo de profil">
+                        Utilisateur 2
+                    </li>
+                    <!-- Ajouter d'autres utilisateurs ici -->
+                </ul>
+            </div>
+
+            <!-- Zone de discussion -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <h3 id="chat-header">Sélectionner une discussion</h3>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages apparaîtront ici -->
+                </div>
+                <div class="chat-input">
+                    <textarea id="message-input" placeholder="Tapez votre message..."></textarea>
+                    <button id="send-message" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
     </section>
     <section id="help" style="display: none">
         <div id="div_help">
@@ -343,6 +377,7 @@
 <script type="module" src="../js/calendar.js"></script>
 <script type="module" src="../js/repeat.js"></script>
 <script type="module" src="../js/input_profil.js"></script>
+<script type="module" src="../js/message.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 </body>
 </html>

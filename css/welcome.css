@@ -144,7 +144,7 @@ body {
     }
 }
 
-#section_calendar, #activities {
+#section_calendar, #activities, #messaging {
     position: relative;
     max-width: 1100px;
     margin: 0 auto;
