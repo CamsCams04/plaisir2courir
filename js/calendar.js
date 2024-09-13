@@ -844,5 +844,23 @@ export async function loadCalendarActivities() {
             await loadCalendarActivities();
         }
     }
+
+    // Appel initial pour définir la disposition correcte
+    updateHeaderToolbar();
+
+    // Écouteur d'événement pour le redimensionnement de la fenêtre
+    window.addEventListener('resize', function() {
+        updateHeaderToolbar();
+    });
+
+    // Fonction pour mettre à jour la barre d'outils en fonction de la taille de la fenêtre
+    function updateHeaderToolbar() {
+        let isMobile = window.innerWidth <= 600;
+        calendar.setOption('headerToolbar', {
+            left: isMobile ? 'title' : 'prev,next today',
+            center: isMobile ? 'prev,dayGridMonth,timeGridWeek,timeGridDay,next' : 'title',
+            right: isMobile ? '' : 'dayGridMonth,timeGridWeek,timeGridDay'
+        });
+    }
 }
 
