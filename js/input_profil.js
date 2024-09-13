@@ -29,7 +29,7 @@ async function displayUserInfo(user) {
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 // Remplir les champs avec les données de l'utilisateur
-                document.getElementById('profile-pic').src = userData.img || '';
+                document.getElementById('profile-pic').src = userData.img || '../img/photo_profil.png';
             } else {
                 console.log('Aucun document trouvé pour cet utilisateur.');
             }

@@ -30,8 +30,8 @@ async function displayUserInfo(user) {
                 // Remplir les champs avec les données de l'utilisateur
                 document.getElementById('username').value = userData.username || '';
                 document.getElementById('email').value = userData.email || '';
-                document.getElementById('profile-pic').src = userData.img || '';
-                document.getElementById('change_img').src = userData.img || '';
+                document.getElementById('profile-pic').src = userData.img || '../img/photo_profil.png';
+                document.getElementById('change_img').src = userData.img || '../img/photo_profil.png';
                 document.getElementById('file_img').dataset.base64 = userData.img || '';
             } else {
                 console.log('Aucun document trouvé pour cet utilisateur.');
