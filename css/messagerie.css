@@ -111,6 +111,59 @@
     padding-left: 40px;
 }
 
+
+.message {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.message.sender {
+    /*background-color: #d1e3ff;*/
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+
+.message.receiver {
+    /*background-color: #f0f0f0;*/
+    align-self: flex-start;
+    margin-right: auto;
+}
+.message.receiver .message-content {
+    color: #333;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+}
+
+
+.message.sender .message-content {
+    color: #007bff;
+    background-color: #e9f5ff;
+    border: 1px solid #007bff;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.message-sender {
+    font-size: 0.75em;
+    color: rgb(128, 128, 128);
+    margin-bottom: 2px;
+}
+
+.message-date {
+    font-size: 0.75em;
+    color: rgb(128, 128, 128);
+    margin-top: 2px;
+}
+
 #send-message {
     background-color: #007bff;
     color: #fff;
