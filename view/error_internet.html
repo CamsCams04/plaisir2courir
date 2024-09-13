@@ -3,8 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Erreur Internet</title>
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/internet.css">
 </head>
 <body>
-    <div id="div_jeu"></div>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <button class="btn btn-primary" id="start">Jouer !</button>
+    <div id="jumpButton" class="hidden">
+        <button class="btn btn-primary">Jump</button>
+    </div>
+    <div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameOverModalLabel">Game Over !</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Vous avez perdu ! <br>
+                        Voulez-vous rejouer ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Rejouer !</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="../js/jquery-3.7.1.min.js"></script>
+<script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+<script type="module" src="../js/runner_game.js"></script>
 </html>
