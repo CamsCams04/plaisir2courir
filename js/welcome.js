@@ -78,31 +78,3 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('help');
     }
 });
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialisez EmailJS avec votre Public Key (User ID)
-    emailjs.init('aWSJgfmnA79gNDPXU'); // Remplacez par votre USER ID d'EmailJS
-
-    const pathname = location.pathname;
-    let pathname_split = pathname.split("/");
-    if (pathname_split[pathname_split.length - 1] !== "profil.html") {
-        document.getElementById('bug-report-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const bugDescription = document.getElementById('bug-description').value;
-            const fixedEmail = 'votre-email@example.com'; // Remplacez par votre adresse e-mail fixe
-
-            emailjs.send('service_8w27u1b', 'template_dtoi5cr', {
-                // Assurez-vous que ces noms de paramètres correspondent aux variables définies dans le modèle
-                bug_description: bugDescription,
-                from_email: fixedEmail
-            })
-                .then(function(response) {
-                    document.getElementById('form-feedback').innerText = 'Votre rapport a été envoyé avec succès.';
-                    document.getElementById('bug-report-form').reset();
-                }, function(error) {
-                    document.getElementById('form-feedback').innerText = 'Erreur lors de l\'envoi du rapport.';
-                });
-        });
-    }
-});

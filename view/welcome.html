@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../css/help.css">
     <link rel="stylesheet" href="../css/messagerie.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 </head>
 <body>
 <!-- Header -->
@@ -113,10 +113,11 @@
     <section id="help" style="display: none">
         <div id="div_help">
             <h2>Aide</h2>
-            <form id="bug-report-form">
+            <form id="bug-report-form" onsubmit="event.preventDefault(); sendEmail();">
                 <label for="bug-description">Description du Bug:</label><br>
-                <textarea id="bug-description" required></textarea><br><br>
-                <input type="submit" value="Envoyer" class="btn btn-primary">
+                <textarea id="bug-description" name="bug-description" required></textarea><br><br>
+                <input type="hidden" name="_replyto" value="noreplyplaisir2courir@gmail.com">
+                <button type="submit" class="btn btn-primary">Envoyer !</button>
                 <div id="form-feedback"></div>
             </form>
         </div>
@@ -377,6 +378,7 @@
 <script type="module" src="../js/repeat.js"></script>
 <script type="module" src="../js/input_profil.js"></script>
 <script type="module" src="../js/message.js"></script>
+<script src="../js/email.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 </body>
 </html>
