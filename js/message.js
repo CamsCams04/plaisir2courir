@@ -107,7 +107,6 @@ async function loadUsers() {
 
 
 // Fonction pour envoyer un message
-// Fonction pour envoyer un message
 async function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
@@ -187,10 +186,11 @@ async function loadMessages(receiverId) {
                     orderBy('timestamp')
                 );
             } else {
-                // Charger les messages entre l'utilisateur actuel et le destinataire sélectionné
-                messagesQuery = query(messagesCollection,
-                    where('receiverId', 'in', [user.uid, receiverId]),
-                    orderBy('timestamp')
+                let messagesReceiverQuery = query(messagesCollection,
+                    where("receiverId", "in", [user.uid, receiverId]),
+                );
+                messagesQuery = query(messagesReceiverQuery,
+                    where("senderId", "in", [user.uid, receiverId]),
                 );
             }
 
