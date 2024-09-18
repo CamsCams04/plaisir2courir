@@ -445,10 +445,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const eventRef = doc(db, 'events', eventId);
                     await deleteDoc(eventRef);
-                    selectedEvent.remove();
-                    selectedEvent = null;
                     const modal = bootstrap.Modal.getInstance(document.getElementById('eventSummaryModal'));
                     modal.hide();
+                    sendEmailSuppr(selectedEvent);
+                    selectedEvent.remove();
+                    selectedEvent = null;
                 } catch (error) {
                     console.error('Erreur lors de la suppression de l\'événement:', error);
                     alert('Erreur lors de la suppression de l\'événement. Veuillez réessayer.');
@@ -460,6 +461,56 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Erreur : Aucun événement sélectionné.');
         }
     });
+
+    // Fonction envoie de mail de suppression
+    async function sendEmailSuppr(selectedEvent) {
+        if (!selectedEvent) {
+            console.error('Aucun événement sélectionné pour envoyer les emails.');
+            return;
+        }
+        const eventId = selectedEvent.id;
+        try {
+            // Récupérer les inscrits à cet événement depuis Firestore
+            const registrationsRef = collection(db, 'registrations');
+            const registrationQuery = query(registrationsRef, where('eventId', '==', eventId));
+            const querySnapshot = await getDocs(registrationQuery);
+
+            const emails = [];
+            for (const doc of querySnapshot.docs) {
+                const data = doc.data();
+                // Créer une requête pour obtenir les détails de l'utilisateur avec l'userId
+                const userQuery = query(collection(db, 'users'), where("id", "==", data.userId));
+                const querySnapshotUser = await getDocs(userQuery); // Utiliser await ici
+                querySnapshotUser.forEach((docUser) => {
+                    const dataUser = docUser.data();
+                    if (dataUser.email) {
+                        emails.push(dataUser.email); // Ajouter l'email à la liste
+                    }
+                });
+            }
+            // Vérifie s'il y a des emails à qui envoyer
+            if (emails.length === 0) {
+                console.log("Aucun inscrit à notifier.");
+                return;
+            }
+            console.log(selectedEvent.title);
+            const templateParams = {
+                event_title: selectedEvent.title,
+                emails: emails.join(", "),
+            };
+
+            emailjs.send('service_ywd4kkv', 'template_2uvkxo9', templateParams)
+                .then(function(response) {
+                    console.log('Emails envoyés avec succès !', response.status, response.text);
+                }, function(error) {
+                    console.error('Erreur lors de l\'envoi des emails :', error);
+                });
+
+        } catch (error) {
+            console.error("Erreur lors de la récupération des inscrits :", error);
+        }
+    }
+
 
     // Fonction pour mettre à jour la barre d'outils en fonction de la taille de la fenêtre
     function updateHeaderToolbar() {
