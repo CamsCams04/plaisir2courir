@@ -305,19 +305,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 const docRef = await addDoc(collection(db, 'events'), newEvent);
-
-                calendar.addEvent({
-                    id: docRef.id,
-                    title: name,
-                    start: formattedStart,
-                    end: formattedEnd,
-                    description: description,
-                    location: location,
-                    extendedProps: {
-                        type: type
-                    },
-                    userId: auth.currentUser.uid
-                });
             }
 
             const modal = bootstrap.Modal.getInstance(document.getElementById('activityModal'));
@@ -493,9 +480,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log("Aucun inscrit à notifier.");
                 return;
             }
+            const startDate = new Date(selectedEvent.start);
+            const endDate = new Date(selectedEvent.end);
+            startDate.toLocaleDateString('fr-FR')
+            const date = startDate.toLocaleDateString('fr-FR') + " " +
+                startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + " / "
+                + endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+
             console.log(selectedEvent.title);
             const templateParams = {
                 event_title: selectedEvent.title,
+                event_date: date,
+                event_location: selectedEvent.location,
                 emails: emails.join(", "),
             };
 
@@ -651,13 +647,6 @@ export async function loadCalendarActivities() {
                 info.el.classList.add('selected-event');
                 populateEventModal(info.event);
             }
-            /*if (auth.currentUser.uid === info.event.extendedProps.userId) {
-                document.getElementById("edit_activity").classList.remove("d-none");
-                document.getElementById("delete_activity").classList.remove("d-none");
-            } else {
-                document.getElementById("edit_activity").classList.add("d-none");
-                document.getElementById("delete_activity").classList.add("d-none");
-            }*/
             const summaryModal = new bootstrap.Modal(document.getElementById('eventSummaryModal'));
             summaryModal.show();
 
