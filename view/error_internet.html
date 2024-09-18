@@ -5,11 +5,17 @@
     <title>Erreur Internet</title>
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../css/internet.css">
+    <script type="module" src="../js/runner_game.js"></script>
 </head>
 <body>
+    <div id="score">
+        <img id="img_gourde" alt="gourde pour score" src="../img/gourde.png">
+        <p id="nb_gourde">000</p>
+    </div>
+    <h1>Erreur de connection internet...</h1>
     <canvas id="gameCanvas" width="800" height="500"></canvas>
     <button class="btn btn-primary" id="start">Jouer !</button>
-    <div id="jumpButton" class="hidden">
+    <div id="jumpButton" class="hidden d-none">
         <button class="btn btn-primary">Jump</button>
     </div>
     <div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
@@ -24,7 +30,7 @@
                         Voulez-vous rejouer ?</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary">Rejouer !</button>
+                    <button class="btn btn-primary" id="replayButton">Rejouer !</button>
                 </div>
             </div>
         </div>
@@ -32,5 +38,5 @@
 </body>
 <script src="../js/jquery-3.7.1.min.js"></script>
 <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
-<script type="module" src="../js/runner_game.js"></script>
+<script src="../js/testConnexion.js"></script>
 </html>

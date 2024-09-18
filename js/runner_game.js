@@ -47,6 +47,7 @@ let lastObstacleTime = 0;
 
 const modal = new bootstrap.Modal(document.getElementById("gameOverModal"));
 const replayButton = document.getElementById('replayButton');
+const view_score = document.getElementById("nb_gourde");
 
 let isGameRunning = false;
 let animationFrameId;
@@ -138,6 +139,9 @@ function checkCollision() {
             } else if (obstacle.image === ground) {
                 // Collision avec une gourde, augmenter le score
                 score += 10;
+                const formattedScore = (score/10).toString().padStart(3, '0');
+                view_score.textContent = formattedScore;
+
                 obstacles.splice(i, 1);
                 i--;
             }
@@ -231,6 +235,16 @@ function handleTouchStart(event) {
     }
 }
 
+// Cacher le bouton "Jump" sur les écrans plus larges
+function updateJumpButtonVisibility() {
+    const jumpButton = document.getElementById('jumpButton');
+    if (window.innerWidth < 768) {
+        jumpButton.classList.remove('hidden');
+    } else {
+        jumpButton.classList.add('hidden');
+    }
+}
+
 function jump() {
     if (!runner.isJumping) {
         runner.isJumping = true;
@@ -240,22 +254,26 @@ function jump() {
 }
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth * 0.5;
-    canvas.height = window.innerHeight * 0.5;
+    canvas.width = window.innerWidth * 0.7;
+    canvas.height = window.innerHeight * 0.4;
     canvas.style.width = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas(); // Initialiser la taille du canevas
+updateJumpButtonVisibility();
 
 const jumpButton = document.getElementById('jumpButton');
-jumpButton.addEventListener('click', handleTouchStart);
+jumpButton.addEventListener('click', (event) => {
+    handleTouchStart(event)
+});
 
 const startButton = document.getElementById("start");
-startButton.addEventListener("click", ()=>{
+startButton.addEventListener("click", (event)=>{
+    jumpButton.classList.remove("d-none");
     startButton.classList.add("d-none");
-    handleTouchStart();
+    handleTouchStart(event);
 })
 
 replayButton.addEventListener('click', () => {
