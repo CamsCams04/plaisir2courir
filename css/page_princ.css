@@ -15,19 +15,31 @@ main{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 #logo_princ{
-    width: 50%;
+    width: 80%;
     height: auto;
     object-fit: contain;
     margin-bottom: 15%;
 }
 
 #logo_rond{
-    width: 5%;
     background-color: white;
     border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.logo-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 #header_accueil {
@@ -40,4 +52,14 @@ main{
     margin: 0 auto;
     flex-grow: 1;
     text-align: center;
+}
+
+#btn_connect{
+    background-color: #4c98af;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 3vh;
+    border-radius: 20px;
 }

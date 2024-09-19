@@ -23,6 +23,12 @@ header {
     margin: 4px;
 }
 
+#title_princ{
+    font-size: 4em;
+    width: auto;
+    margin: 4px;
+}
+
 @media (max-width: 600px) {
     #logo_title {
         height: 2em;
