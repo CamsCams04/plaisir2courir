@@ -236,7 +236,7 @@ body {
 
 /* Classes de couleur pour les badges des types d'événements */
 .réunion {
-    background-color: #007bff;
+    background-color: #dc3545;
 }
 
 .entrainement {
@@ -244,7 +244,7 @@ body {
 }
 
 .compétition {
-    background-color: #dc3545;
+    background-color: #007bff;
 }
 
 /* event select */
