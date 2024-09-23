@@ -144,9 +144,9 @@
                         <label for="activity-type" class="form-label">Type d'activité :</label>
                         <select class="form-select" id="activity-type" name="activity-type" required>
                             <option value="" disabled selected>Sélectionner le type d'activité</option>
-                            <option value="reunion">Réunion</option>
-                            <option value="entrainement">Entrainement</option>
-                            <option value="competition">Compétition</option>
+                            <option value="Réunion">Réunion</option>
+                            <option value="Entraînement">Entraînement</option>
+                            <option value="Compétition">Compétition</option>
                         </select>
                     </div>
 
@@ -227,9 +227,9 @@
                         <label for="activity-edit-type" class="form-label">Type d'activité :</label>
                         <select class="form-select" id="activity-edit-type" name="activity-type" required>
                             <option value="" disabled selected>Sélectionner le type d'activité</option>
-                            <option value="reunion">Réunion</option>
-                            <option value="entrainement">Entrainement</option>
-                            <option value="competition">Compétition</option>
+                            <option value="Réunion">Réunion</option>
+                            <option value="Entraînement">Entraînement</option>
+                            <option value="Compétition">Compétition</option>
                         </select>
                     </div>
 
@@ -326,10 +326,25 @@
                     <dt class="col-sm-4">Nombre d'inscription :</dt>
                     <dd class="col-sm-8" id="summary-inscription"></dd>
 
+                    <dt class="col-sm-4">Liste des inscrits :</dt>
+                    <dd class="col-sm-8" id="summary-list-inscription">
+                        <button class="btn btn-outline-primary" id="btn-list-inscription">Visualiser !</button>
+                    </dd>
+
                     <dt class="col-sm-4">Créateur :</dt>
                     <dd class="col-sm-8" id="summary-creator"></dd>
                 </dl>
-                <button id="register_event" class="btn btn-outline-primary">S'inscrire</button>
+                <div class="mb-3 d-flex align-items-center">
+                    <button id="register_event" class="btn btn-outline-primary me-2">S'inscrire</button>
+                    <div class="row g-3 align-items-center d-none" id="div_invite">
+                        <div class="col-auto">
+                            <label for="activity-invite" class="col-form-label">Invité(s) :</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" id="activity-invite" class="form-control" max="10" min="0">
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="edit_activity" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#activityEditModal">
@@ -369,6 +384,23 @@
     </div>
 </div>
 
+<!-- Modal d'affichage des inscrits -->
+<div class="modal fade" id="listInscriptionModal" tabindex="-1" aria-labelledby="listInscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="listInscriptionModalLabel">Affichage des participants</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="body_list"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i> Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Scripts -->
 <script src="../js/jquery-3.7.1.min.js"></script>

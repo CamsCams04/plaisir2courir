@@ -97,11 +97,12 @@ async function loadUsers() {
                 }
 
                 // Mettre à jour le nom du destinataire
-                chatHeader.textContent = userData.lastname + " " + userData.first();
+                chatHeader.textContent = userData.lastname + " " + userData.firstname;
                 messageInput.dataset.receiverId = doc.id; // ID du destinataire
-                USERNAME = userData.lastname;
+                USERNAME = userData.lastname + " " + userData.firstname;
 
                 // Charger les messages de l'utilisateur sélectionné
+                console.log(doc.id)
                 loadMessages(doc.id);
             });
         });
@@ -141,8 +142,10 @@ async function sendMessage() {
             // Récupérer le lastname de l'utilisateur à partir de Firestore
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             const userData = userDoc.data();
-            const senderName = userData.lastname || 'Utilisateur';
-
+            let senderName = 'Utilisateur';
+            if (userData.lastname && userData.firstname) {
+                senderName = userData.lastname + " " + userData.firstname;
+            }
             const messagesCollection = collection(db, 'messages');
             await addDoc(messagesCollection, {
                 senderId: user.uid,
