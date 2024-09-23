@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
                         const userData = doc.data();
-                        document.getElementById('summary-creator').textContent = userData.username || 'Nom inconnu';
+                        document.getElementById('summary-creator').textContent = userData.lastname || 'Nom inconnu';
                     });
                 } else {
                     console.error('Aucun utilisateur trouvé pour cet ID.');
@@ -826,7 +826,7 @@ export async function loadCalendarActivities() {
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
                         const userData = doc.data();
-                        document.getElementById('summary-creator').textContent = userData.username || 'Nom inconnu';
+                        document.getElementById('summary-creator').textContent = userData.lastname + userData.firstname || 'Nom inconnu';
                     });
                 } else {
                     console.error('Aucun utilisateur trouvé pour cet ID.');

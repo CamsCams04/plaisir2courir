@@ -75,7 +75,12 @@ async function loadUsers() {
             img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
 
             li.appendChild(img);
-            li.appendChild(document.createTextNode(userData.username || 'Utilisateur sans nom'));
+            if(userData.lastname && userData.firstname){
+                li.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
+            }else{
+                li.appendChild(document.createTextNode('Utilisateur sans nom'));
+            }
+
 
             userList.appendChild(li);
 
@@ -92,9 +97,9 @@ async function loadUsers() {
                 }
 
                 // Mettre à jour le nom du destinataire
-                chatHeader.textContent = userData.username;
+                chatHeader.textContent = userData.lastname + " " + userData.first();
                 messageInput.dataset.receiverId = doc.id; // ID du destinataire
-                USERNAME = userData.username;
+                USERNAME = userData.lastname;
 
                 // Charger les messages de l'utilisateur sélectionné
                 loadMessages(doc.id);
@@ -133,10 +138,10 @@ async function sendMessage() {
 
     if (message && user && receiverId) {
         try {
-            // Récupérer le username de l'utilisateur à partir de Firestore
+            // Récupérer le lastname de l'utilisateur à partir de Firestore
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             const userData = userDoc.data();
-            const senderName = userData.username || 'Utilisateur';
+            const senderName = userData.lastname || 'Utilisateur';
 
             const messagesCollection = collection(db, 'messages');
             await addDoc(messagesCollection, {

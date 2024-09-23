@@ -21,7 +21,8 @@ const db = getFirestore(app);
 document.getElementById('signup-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const username = document.getElementById('username').value;
+    const lastname = document.getElementById('lastname').value;
+    const firstname = document.getElementById('firstname').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
@@ -37,11 +38,12 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
 
         await setDoc(doc(db, 'users', user.uid), {
             id: user.uid,
-            username: username,
+            lastname: lastname,
+            firstname: firstname,
             email: email
         });
 
-        window.location.href = `welcome.html?username=${encodeURIComponent(username)}`;
+        window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;
     } catch (error) {
         document.getElementById('signup-error').textContent = `Erreur lors de l'inscription : ${error.message}`;
     }
@@ -56,13 +58,14 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
     try {
         let userEmail;
-        let username;
+        let lastname;
+        let firstname;
 
         if (loginInput.includes('@')) {
             userEmail = loginInput;
         } else {
             const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('username', '==', loginInput));
+            const q = query(usersRef, where('lastname', '==', loginInput));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
@@ -71,13 +74,14 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
             const userDoc = querySnapshot.docs[0].data();
             userEmail = userDoc.email;
-            username = userDoc.username;
+            lastname = userDoc.lastname;
+            firstname = userDoc.firstname;
         }
 
         const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
         const user = userCredential.user;
 
-        if (!username) {
+        if (!lastname) {
             const userDocRef = doc(db, 'users', user.uid);
             const userDocSnapshot = await getDoc(userDocRef);
 
@@ -86,10 +90,11 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             }
 
             const userDoc = userDocSnapshot.data();
-            username = userDoc.username;
+            lastname = userDoc.lastname;
+            firstname = userDoc.firstname;
         }
 
-        window.location.href = `welcome.html?username=${encodeURIComponent(username)}`;
+        window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;
     } catch (error) {
         document.getElementById('login-error').textContent = `Erreur lors de la connexion : ${error.message}`;
     }
@@ -112,7 +117,7 @@ document.getElementById('forgot-password').addEventListener('click', async (e) =
             userEmail = loginInput;
         } else {
             const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('username', '==', loginInput));
+            const q = query(usersRef, where('lastname', '==', loginInput));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {

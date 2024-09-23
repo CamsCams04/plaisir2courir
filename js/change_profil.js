@@ -28,7 +28,8 @@ async function displayUserInfo(user) {
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 // Remplir les champs avec les données de l'utilisateur
-                document.getElementById('username').value = userData.username || '';
+                document.getElementById('lastname').value = userData.lastname || '';
+                document.getElementById("firstname").value = userData.firstname || "";
                 document.getElementById('email').value = userData.email || '';
                 document.getElementById('profile-pic').src = userData.img || '../img/photo_profil.png';
                 document.getElementById('change_img').src = userData.img || '../img/photo_profil.png';
@@ -65,7 +66,8 @@ document.getElementById('form_profil').addEventListener('submit', async (e) => {
 
     const userDocRef = doc(db, 'users', user.uid);
 
-    const username = document.getElementById('username').value;
+    const lastname = document.getElementById('lastname').value;
+    const firstname = document.getElementById("firstname").value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
@@ -73,8 +75,12 @@ document.getElementById('form_profil').addEventListener('submit', async (e) => {
 
     const updates = {};
 
-    if (username && username !== user.username) {
-        updates.username = username;
+    if (lastname && lastname !== user.lastname) {
+        updates.lastname = lastname;
+    }
+
+    if (firstname && firstname !== user.firstname) {
+        updates.firstname = firstname;
     }
 
     if (email && email !== user.email) {
