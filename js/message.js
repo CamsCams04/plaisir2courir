@@ -164,11 +164,59 @@ async function sendMessage() {
 
             messageInput.value = ''; // Réinitialiser le champ de saisie
             console.log('Message envoyé avec succès !');
+
+           
+           const usersCollection = collection(db, "users");
+           const userEmails = [];
+           if(receiverId === "group"){
+                const querySnapshot = await getDocs(usersCollection);
+                querySnapshot.forEach((doc) => {
+                    userEmails.push(doc.data().email);
+                });
+                console.log("Tous les emails : ", userEmails);
+                
+                sendEmailMessage(senderName, message, userEmails);
+            }else{
+                const userDocRef = doc(usersCollection, receiverId);
+                const userDoc = await getDoc(userDocRef);
+            
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    userEmails.push(userData.email)
+                    console.log("Email de l'utilisateur : ", userEmails);
+                    sendEmailMessage(senderName, message, userEmails);
+                } else {
+                    console.log("Aucun utilisateur trouvé avec cet ID.");
+                }
+            }
         } catch (error) {
             console.error('Erreur lors de l\'envoi du message:', error);
         }
     } else {
         console.error('Le message est vide ou l\'utilisateur n\'est pas connecté.');
+    }
+
+    function sendEmailMessage(senderName, message, receiverEmail) {
+        // Les paramètres à envoyer avec le template
+        const templateParams = {
+            message_content: message,
+            sender_name: senderName,
+            subject: "Nouveau Message !",
+            receiverEmail: receiverEmail.join(", "),
+        };
+    
+        // Appel de la méthode EmailJS pour envoyer l'email
+        emailjs.send('service_ywd4kkv', 'template_kya5cod', templateParams)
+            .then(function(response) {
+                console.log('Email envoyé avec succès !', response.status, response.text);
+                document.getElementById("form-feedback").textContent = 'Email envoyé avec succès !';
+                document.getElementById("form-feedback").style.color = "green";
+                document.getElementById('bug-description').value = "";
+            }, function(error) {
+                console.error('Erreur lors de l\'envoi de l\'email :', error);
+                document.getElementById("form-feedback").textContent = 'Erreur lors de l\'envoi de l\'email.';
+                document.getElementById("form-feedback").style.color = "red";
+            });
     }
 }
 

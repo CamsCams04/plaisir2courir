@@ -6,7 +6,9 @@
 function sendEmail() {
     // Les paramètres à envoyer avec le template
     const templateParams = {
-        bug_description: document.getElementById('bug-description').value
+        message_content: document.getElementById('bug-description').value,
+        sender_name: "BUG !",
+        subject: "Descrition de Bug",
     };
 
     // Appel de la méthode EmailJS pour envoyer l'email
