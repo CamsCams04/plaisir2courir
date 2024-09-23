@@ -230,7 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
                                 
                                 let li_list_user = document.createElement("li");
                                 li_list_user.className = "list-group-item";
-                                li_list_user.textContent = user.lastname.toUpperCase() + " " + user.firstname;
+                                li_list_user.innerHTML = `
+                                    <div class="row d-flex justify-content-between">
+                                        <div class="col-auto">
+                                            ${user.lastname.toUpperCase()} ${user.firstname}
+                                        </div>
+                                        <div class="col-auto text-secondary">
+                                            Nb d'invité(s) : ${userRegister.nbInvite}
+                                        </div>
+                                    </div>
+                                ` ;
 
                                 ul_list.appendChild(li_list_user);
                             })
@@ -1000,7 +1009,16 @@ export async function loadCalendarActivities() {
                                 
                                 let li_list_user = document.createElement("li");
                                 li_list_user.className = "list-group-item";
-                                li_list_user.textContent = user.lastname.toUpperCase() + " " + user.firstname;
+                                li_list_user.innerHTML = `
+                                <div class="row d-flex justify-content-between">
+                                    <div class="col-auto">
+                                        ${user.lastname.toUpperCase()} ${user.firstname}
+                                    </div>
+                                    <div class="col-auto text-secondary">
+                                        Nb d'invité(s) : ${userRegister.nbInvite}
+                                    </div>
+                                </div>
+                            ` ;
 
                                 ul_list.appendChild(li_list_user);
                             })
