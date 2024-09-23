@@ -141,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function populateSummaryModal(event) {
         const btnList = document.getElementById('btn-list-inscription');
+        const btn_close_header = document.getElementById("close_header");
+        const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
         document.getElementById('summary-type').textContent = event.extendedProps.type || '';
         document.getElementById('summary-location').textContent = event.extendedProps.location || '';
@@ -164,10 +166,46 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const registrationsCollection = collection(db, 'registrations');
             const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', event.id));
+            const registrationUserQuery = query(registrationsCollection, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+
+            const querySnapshotUserRegister = await getDocs(registrationUserQuery);
 
             // Écoute en temps réel
             onSnapshot(eventRegistrationsQuery, (snapshot) => {
-                document.getElementById("summary-inscription").textContent = snapshot.size;
+                let totalInvite = 0;
+                snapshot.forEach((doc) => {
+                    const registration = doc.data();
+                    totalInvite += parseInt(registration.nbInvite || 0, 10); // Conversion en nombre pour éviter les erreurs
+                });
+
+                console.log("Total nbInvite :", totalInvite);
+                document.getElementById("summary-inscription").textContent = snapshot.size + totalInvite;
+
+                // Vérifier si l'utilisateur est inscrit
+                if (!querySnapshotUserRegister.empty) {
+                    querySnapshotUserRegister.forEach((doc) => {
+                        const registrationDoc = doc.data();
+                        const nbInvite = registrationDoc.nbInvite || 0;
+
+                        console.log("nbInvite de l'utilisateur :", nbInvite);
+
+                        // Assurez-vous que l'élément existe avant de modifier sa valeur
+                        const activityInviteElement = document.getElementById("activity-invite");
+                        if (activityInviteElement) {
+                            activityInviteElement.value = nbInvite;
+                        } else {
+                            console.error("Élément #activity-invite introuvable dans le DOM.");
+                        }
+                    });
+                } else {
+                    // Si l'utilisateur n'est pas inscrit, afficher 0
+                    const activityInviteElement = document.getElementById("activity-invite");
+                    if (activityInviteElement) {
+                        activityInviteElement.textContent = 0;
+                    } else {
+                        console.error("Élément #activity-invite introuvable dans le DOM.");
+                    }
+                }
             }, (error) => {
                 console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
             });
@@ -236,6 +274,54 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error("Erreur lors de la récupération du créateur :", error);
         }
+
+        btn_close_footer.addEventListener("click", async () => {
+            try {
+                const nbInvite = document.getElementById("activity-invite").value;
+                const registrationsCollectionInvite = collection(db, "registrations");
+                console.log(auth.currentUser.uid)
+                const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+                
+                const querySnapshot = await getDocs(registrationQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach(async (docSnapshot) => {
+                        const registrationDocRef = doc(db, 'registrations', docSnapshot.id);
+
+                        await updateDoc(registrationDocRef, {
+                            nbInvite: parseInt(nbInvite)
+                        });
+
+                        console.log(`nbInvite mis à jour pour l'inscription de l'événement ${event.id}`);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de nbInvite:', error);
+            }
+        });
+
+        btn_close_header.addEventListener("click", async ()=>{
+            try {
+                const nbInvite = document.getElementById("activity-invite").value;
+                const registrationsCollectionInvite = collection(db, "registrations");
+                console.log(auth.currentUser.uid)
+                const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+                
+                const querySnapshot = await getDocs(registrationQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach(async (docSnapshot) => {
+                        const registrationDocRef = doc(db, 'registrations', docSnapshot.id);
+
+                        await updateDoc(registrationDocRef, {
+                            nbInvite: parseInt(nbInvite)
+                        });
+
+                        console.log(`nbInvite mis à jour pour l'inscription de l'événement ${event.id}`);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de nbInvite:', error);
+            }
+        });
     }
 
 
@@ -563,9 +649,11 @@ document.addEventListener('DOMContentLoaded', function () {
     async function subscribeToEvent(eventId) {
         try {
             const userId = auth.currentUser.uid;
+            const nbInvite = document.getElementById("activity-invite").value;
             await addDoc(collection(db, 'registrations'), {
                 userId: userId,
-                eventId: eventId
+                eventId: eventId,
+                nbInvite : parseInt(nbInvite)
             });
             updateRegistrationButton(eventId); // Met à jour le bouton après inscription
         } catch (error) {
@@ -823,6 +911,8 @@ export async function loadCalendarActivities() {
 
     async function populateSummaryModal(event) {
         const btnList = document.getElementById('btn-list-inscription');
+        const btn_close_header = document.getElementById("close_header");
+        const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
         document.getElementById('summary-type').textContent = event.extendedProps.type || '';
         document.getElementById('summary-location').textContent = event.extendedProps.location || '';
@@ -846,10 +936,46 @@ export async function loadCalendarActivities() {
         try {
             const registrationsCollection = collection(db, 'registrations');
             const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', event.id));
+            const registrationUserQuery = query(registrationsCollection, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+
+            const querySnapshotUserRegister = await getDocs(registrationUserQuery);
 
             // Écoute en temps réel
             onSnapshot(eventRegistrationsQuery, (snapshot) => {
-                document.getElementById("summary-inscription").textContent = snapshot.size;
+                let totalInvite = 0;
+                snapshot.forEach((doc) => {
+                    const registration = doc.data();
+                    totalInvite += parseInt(registration.nbInvite || 0, 10); // Conversion en nombre pour éviter les erreurs
+                });
+
+                console.log("Total nbInvite :", totalInvite);
+                document.getElementById("summary-inscription").textContent = snapshot.size + totalInvite;
+
+                // Vérifier si l'utilisateur est inscrit
+                if (!querySnapshotUserRegister.empty) {
+                    querySnapshotUserRegister.forEach((doc) => {
+                        const registrationDoc = doc.data();
+                        const nbInvite = registrationDoc.nbInvite || 0;
+
+                        console.log("nbInvite de l'utilisateur :", nbInvite);
+
+                        // Assurez-vous que l'élément existe avant de modifier sa valeur
+                        const activityInviteElement = document.getElementById("activity-invite");
+                        if (activityInviteElement) {
+                            activityInviteElement.value = nbInvite;
+                        } else {
+                            console.error("Élément #activity-invite introuvable dans le DOM.");
+                        }
+                    });
+                } else {
+                    // Si l'utilisateur n'est pas inscrit, afficher 0
+                    const activityInviteElement = document.getElementById("activity-invite");
+                    if (activityInviteElement) {
+                        activityInviteElement.textContent = 0;
+                    } else {
+                        console.error("Élément #activity-invite introuvable dans le DOM.");
+                    }
+                }
             }, (error) => {
                 console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
             });
@@ -914,6 +1040,54 @@ export async function loadCalendarActivities() {
         } catch (error) {
             console.error("Erreur lors de la récupération du créateur :", error);
         }
+        
+        btn_close_footer.addEventListener("click", async () => {
+            try {
+                const nbInvite = document.getElementById("activity-invite").value;
+                const registrationsCollectionInvite = collection(db, "registrations");
+                console.log(auth.currentUser.uid)
+                const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+                
+                const querySnapshot = await getDocs(registrationQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach(async (docSnapshot) => {
+                        const registrationDocRef = doc(db, 'registrations', docSnapshot.id);
+
+                        await updateDoc(registrationDocRef, {
+                            nbInvite: parseInt(nbInvite)
+                        });
+
+                        console.log(`nbInvite mis à jour pour l'inscription de l'événement ${event.id}`);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de nbInvite:', error);
+            }
+        });
+
+        btn_close_header.addEventListener("click", async ()=>{
+            try {
+                const nbInvite = document.getElementById("activity-invite").value;
+                const registrationsCollectionInvite = collection(db, "registrations");
+                console.log(auth.currentUser.uid)
+                const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+                
+                const querySnapshot = await getDocs(registrationQuery);
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach(async (docSnapshot) => {
+                        const registrationDocRef = doc(db, 'registrations', docSnapshot.id);
+
+                        await updateDoc(registrationDocRef, {
+                            nbInvite: parseInt(nbInvite)
+                        });
+
+                        console.log(`nbInvite mis à jour pour l'inscription de l'événement ${event.id}`);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de nbInvite:', error);
+            }
+        });
     }
 
     // Fonction check inscription

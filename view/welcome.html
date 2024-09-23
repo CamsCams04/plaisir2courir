@@ -301,7 +301,7 @@
                 <h5 class="modal-title text-center w-100 font-weight-bold" id="eventSummaryModalLabel">
                     <span id="summary-name" class=""></span>
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close_header"></button>
             </div>
             <div class="modal-body">
                 <dl class="row">
@@ -341,7 +341,7 @@
                             <label for="activity-invite" class="col-form-label">Invité(s) :</label>
                         </div>
                         <div class="col-auto">
-                            <input type="number" id="activity-invite" class="form-control" max="10" min="0">
+                            <input type="number" id="activity-invite" value="0" class="form-control" max="10" min="0">
                         </div>
                     </div>
                 </div>
@@ -353,7 +353,7 @@
                 <button id="delete_activity" class="btn btn-danger d-none">
                     <i class="fa-solid fa-trash"></i> Supprimer Activité
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close_footer">
                     <i class="fa-solid fa-xmark"></i> Fermer
                 </button>
             </div>
