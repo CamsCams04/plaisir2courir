@@ -14,11 +14,13 @@
 <script type="text/javascript">
     function sendEmail() {
         Email.send({
-            SecureToken : "ee759dea-d136-40ae-b656-f645e9170509",
-            To : 'morfincamille@gmail.com',
-            From : "noreplyplaisir2courir@gmail.com",
-            Subject : "ceci est l'objet",
-            Body : "Et ceci est le message"
+            Host: "smtp.gmail.com",
+            Username: "noreplyplaisir2courir@gmail.com",
+            Password: "obrs uhzj nygz ulsz",
+            To: 'morfincamille@gamil.com',
+            From: "noreplyplaisir2courir@gmail.com",
+            Subject: "Ceci est l'objet",
+            Body: "Et ceci est le message"
         }).then(
             message => alert(message)
         );
