@@ -78,3 +78,20 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('help');
     }
 });
+
+// Fonction pour fermer la barre latérale si le clic est à l'extérieur
+function clickOutside(event) {
+    const sidebar = document.getElementById('sidebar');
+    const openButton = document.getElementById('open-btn');
+    const closeButton = document.getElementById('close-btn');
+
+    // Vérifiez si le clic est en dehors de la barre latérale et des boutons d'ouverture et de fermeture
+    if (!sidebar.contains(event.target) &&
+        !openButton.contains(event.target) &&
+        !closeButton.contains(event.target)) {
+        sidebar.style.left = '-250px'; // Ferme la barre latérale
+    }
+}
+
+// Ajouter le gestionnaire de clic au document
+document.addEventListener('click', clickOutside);

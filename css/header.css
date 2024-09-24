@@ -35,4 +35,7 @@ header {
         width: auto;
         margin: 4px;
     }
+    #title_princ{
+        font-size: 2em;
+    }
 }

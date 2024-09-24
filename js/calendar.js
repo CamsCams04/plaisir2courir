@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             week: 'Semaine',
             day: 'Jour'
         },
+        firstDay: 1,
         events: [],
         eventDidMount: function (info) {
             const eventType = info.event.extendedProps.type;
@@ -112,9 +113,14 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 
     function eventsAreEqual(event1, event2) {
-        return event1.start.toISOString() === event2.start.toISOString() &&
-            event1.end.toISOString() === event2.end.toISOString() &&
-            event1.title === event2.title;
+        if(event2.end && event1.end){
+            return event1.start.toISOString() === event2.start.toISOString() &&
+                event1.end.toISOString() === event2.end.toISOString() &&
+                event1.title === event2.title;
+        }
+        else{
+            return false;
+        }
     }
 
     function resetEventModal() {
@@ -226,10 +232,13 @@ document.addEventListener('DOMContentLoaded', function () {
             await updateRegistrationButton(event.id);
 
             btnList.addEventListener("click", () => {
-                const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
-                modalInscription.show();
+                // Effacer le contenu précédent avant d'ajouter de nouveaux éléments
+                let body_modal = document.getElementById("body_list");
+                body_modal.innerHTML = ''; // Réinitialise le contenu du body_modal
+
                 let ul_list = document.createElement("ul");
                 ul_list.className = "list-group";
+
                 onSnapshot(eventRegistrationsQuery, (snapshot) => {
                     snapshot.forEach((doc) => {
                         const userRegister = doc.data();
@@ -237,34 +246,36 @@ document.addEventListener('DOMContentLoaded', function () {
                         const usersCollection = collection(db, "users");
                         const userRegistrationQuery = query(usersCollection, where("id", "==", userRegister.userId));
 
-                        onSnapshot(userRegistrationQuery, (snapshotUser) =>{
+                        onSnapshot(userRegistrationQuery, (snapshotUser) => {
                             snapshotUser.forEach((docUser) => {
                                 const user = docUser.data();
-                                
+
                                 let li_list_user = document.createElement("li");
                                 li_list_user.className = "list-group-item";
                                 li_list_user.innerHTML = `
-                                    <div class="row d-flex justify-content-between">
-                                        <div class="col-auto">
-                                            ${user.lastname.toUpperCase()} ${user.firstname}
-                                        </div>
-                                        <div class="col-auto text-secondary">
-                                            Nb d'invité(s) : ${userRegister.nbInvite}
-                                        </div>
-                                    </div>
-                                ` ;
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-auto">
+                                ${user.lastname.toUpperCase()} ${user.firstname}
+                            </div>
+                            <div class="col-auto text-secondary">
+                                Nb d'invité(s) : ${userRegister.nbInvite}
+                            </div>
+                        </div>
+                    `;
 
                                 ul_list.appendChild(li_list_user);
-                            })
-                        })
-                        let body_modal = document.getElementById("body_list");
-                        body_modal.appendChild(ul_list);
+                            });
+                        });
                     });
 
+                    body_modal.appendChild(ul_list)
                 }, (error) => {
                     console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
                 });
+                const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
+                modalInscription.show();
             });
+
 
         } catch (error) {
             console.error("Erreur lors de la récupération des inscriptions:", error);
@@ -424,19 +435,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const nb_repeat = parseInt(document.getElementById("repeat-weeks").value, 10);
 
         const initialStartDate = new Date(`${date}T${startTime}`);
-        const initialEndDate = new Date(`${date}T${endTime}`);
+        let initialEndDate;
+
+        // Vérifier si endTime est renseigné
+        if (endTime) {
+            initialEndDate = new Date(`${date}T${endTime}`);
+        } else {
+            initialEndDate = null; // Pas de date de fin
+        }
 
         try {
             console.log(`Création d'événements : ${nb_repeat} répétitions`);
             for (let i = 0; i < nb_repeat; i++) {
                 const currentStartDate = new Date(initialStartDate);
-                const currentEndDate = new Date(initialEndDate);
+                const currentEndDate = initialEndDate ? new Date(initialEndDate) : null; // Gérer la date de fin
+
                 currentStartDate.setDate(currentStartDate.getDate() + (i * 7));
-                currentEndDate.setDate(currentEndDate.getDate() + (i * 7));
+                if (currentEndDate) {
+                    currentEndDate.setDate(currentEndDate.getDate() + (i * 7));
+                }
 
                 // Formatage des dates en ISO string
                 const formattedStart = currentStartDate.toISOString();
-                const formattedEnd = currentEndDate.toISOString();
+                const formattedEnd = currentEndDate ? currentEndDate.toISOString() : '--:--'; // Valeur par défaut
 
                 console.log(`Ajout événement - Début: ${formattedStart}, Fin: ${formattedEnd}`);
 
@@ -661,9 +682,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateHeaderToolbar() {
         let isMobile = window.innerWidth <= 600;
         calendar.setOption('headerToolbar', {
-            left: isMobile ? 'title' : 'prev,next today',
-            center: isMobile ? 'prev,dayGridMonth,timeGridWeek,timeGridDay,next' : 'title',
-            right: isMobile ? '' : 'dayGridMonth,timeGridWeek,timeGridDay'
+            left: isMobile ? 'title' : 'prev,next',
+            center: isMobile ? 'prev,today,next' : 'title',
+            right: isMobile ? '' : 'today'
         });
     }
 
@@ -932,7 +953,7 @@ export async function loadCalendarActivities() {
     }
 
     async function populateSummaryModal(event) {
-        const btnList = document.getElementById('btn-list-inscription');
+        //const btnList = document.getElementById('btn-list-inscription');
         const btn_close_header = document.getElementById("close_header");
         const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
@@ -1004,7 +1025,7 @@ export async function loadCalendarActivities() {
 
             await updateRegistrationButton(event.id);
 
-            btnList.addEventListener("click", () => {
+            /*btnList.addEventListener("click", () => {
                 const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
                 modalInscription.show();
                 let ul_list = document.createElement("ul");
@@ -1043,7 +1064,7 @@ export async function loadCalendarActivities() {
                 }, (error) => {
                     console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
                 });
-            });
+            });*/
 
         } catch (error) {
             console.error("Erreur lors de la récupération des inscriptions:", error);

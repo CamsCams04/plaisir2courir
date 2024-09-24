@@ -134,14 +134,6 @@ body {
     .fc-scroller {
         overflow-x: auto;
     }
-
-    .fc-next-button{
-        margin-left: 5px !important;
-    }
-
-    .fc-prev-button{
-        margin-right: 5px !important;
-    }
 }
 
 #section_calendar, #activities, #messaging {
