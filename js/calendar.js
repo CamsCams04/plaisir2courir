@@ -42,7 +42,20 @@ document.addEventListener('DOMContentLoaded', function () {
         eventDidMount: function (info) {
             const eventType = info.event.extendedProps.type;
             if (eventType) {
-                info.el.classList.add(eventType);
+                switch (eventType){
+                    case "Entraînement":
+                        info.el.classList.add("entrainement");
+                        break;
+                    case "Réunion":
+                        info.el.classList.add("reunion");
+                        break;
+                    case "Compétition":
+                        info.el.classList.add("competition");
+                        break;
+                    default:
+                        console.log("Ce type n'est pas correct");
+                        break;
+                }
             }
         },
         eventClick: function (info) {

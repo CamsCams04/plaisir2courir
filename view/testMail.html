@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Test Envoie mail</title>
+</head>
+<body>
+<main>
+    <input type = "button" onClick="sendEmail()" value="Envoyer !"/>
+</main>
+</body>
+<script type="text/javascript">
+    function sendEmail() {
+        Email.send({
+            SecureToken : "bdbb83ed-9213-42cc-8401-dc282dadd73b ",
+            To : 'morfincamille@gmail.com',
+            From : "noreplyplaisir2courir@gmail.com",
+            Subject : "ceci est l'objet",
+            Body : "Et ceci est le message"
+        }).then(
+            message => alert(message)
+        );
+    }
+</script>
+
+<script src="https://smtpjs.com/v3/smtp.js"></script>
+</html>
