@@ -23,7 +23,7 @@ const auth = getAuth(app); // Initialiser auth
 async function loadUsers() {
     try {
         const userList = document.getElementById('ul_users');
-        userList.innerHTML = ''; // Vider la liste avant d'ajouter les utilisateurs
+        userList.innerHTML = '';
 
         // Ajouter le canal de groupe
         const groupChannel = document.createElement('li');
@@ -64,6 +64,39 @@ async function loadUsers() {
         const usersCollection = collection(db, 'users');
         const userSnapshot = await getDocs(usersCollection);
 
+        const other_users = document.createElement("div");
+        other_users.id = "other_users";
+        other_users.style.display = "none"; // Initialiser comme caché
+
+        const btn_other_users = document.createElement("li");
+        btn_other_users.id = "btn_other_users";
+        btn_other_users.classList.add("user-item");
+        btn_other_users.appendChild(document.createTextNode("Autres utilisateurs"));
+
+        const arrowIcon = document.createElement("i");
+        arrowIcon.className = "fas fa-chevron-down";
+        arrowIcon.style.marginLeft = "10px";
+
+        btn_other_users.appendChild(arrowIcon);
+
+        btn_other_users.addEventListener('click', () => {
+            if (other_users) {
+                if (other_users.classList.contains('show')) {
+                    other_users.classList.remove('show');
+                    arrowIcon.classList.remove('rotate');
+                    setTimeout(() => {
+                        other_users.style.display = "none";
+                    }, 500);
+                } else {
+                    other_users.style.display = "block";
+                    setTimeout(() => {
+                        other_users.classList.add('show');
+                        arrowIcon.classList.add('rotate');
+                    }, 10);
+                }
+            }
+        });
+
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             const li = document.createElement('li');
@@ -75,14 +108,14 @@ async function loadUsers() {
             img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
 
             li.appendChild(img);
-            if(userData.lastname && userData.firstname){
+            if (userData.lastname && userData.firstname) {
                 li.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
-            }else{
+            } else {
                 li.appendChild(document.createTextNode('Utilisateur sans nom'));
             }
 
-
-            userList.appendChild(li);
+            // Ajouter chaque utilisateur à la div des autres utilisateurs
+            other_users.appendChild(li);
 
             // Ajouter un écouteur pour sélectionner un utilisateur
             li.addEventListener('click', () => {
@@ -102,14 +135,19 @@ async function loadUsers() {
                 USERNAME = userData.lastname + " " + userData.firstname;
 
                 // Charger les messages de l'utilisateur sélectionné
-                console.log(doc.id)
                 loadMessages(doc.id);
             });
         });
+
+        // Ajouter le bouton "Autres utilisateurs" et la liste des autres utilisateurs à la liste
+        userList.appendChild(btn_other_users);
+        userList.appendChild(other_users); // Ajouter la div après que les utilisateurs aient été ajoutés
+
     } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error);
     }
 }
+
 
 
 // Fonction pour envoyer un message

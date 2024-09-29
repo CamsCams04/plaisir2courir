@@ -26,6 +26,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
+    const role = document.getElementById("none");
 
     if (password !== confirmPassword) {
         document.getElementById('signup-error').textContent = "Les mots de passe ne correspondent pas !";
@@ -40,7 +41,8 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
             id: user.uid,
             lastname: lastname,
             firstname: firstname,
-            email: email
+            email: email,
+            role: role,
         });
 
         window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;

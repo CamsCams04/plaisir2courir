@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../css/messagerie.css">
     <link rel="stylesheet" href="../css/calendar.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 </head>
 <body>
@@ -32,13 +33,18 @@
         <li><a href="#" id="a_calendar">Calendrier</a></li>
         <li><a href="#" id="a_messaging">Messagerie</a></li>
         <li><a href="#" id="a_help">Aide</a></li>
+        <li class="d-none" id="li_admin"><a href="#" id="a_admin">Page Admin</a></li>
     </ul>
 </div>
 
 <!-- Main Content -->
 <div id="main-content">
     <section id="activities" style="display: none">
-        <div id='calendar_activitie'></div>
+        <div id='calendar_activitie'>
+            <div id="no-events-message" style="">
+                <h2>Vous n'êtes inscrit à aucun événement, rendez-vous sur le <p id="actToCal">Calendrier</p></h2>
+            </div>
+        </div>
         <!-- Languette pour ouvrir la légende -->
         <div id="legend-toggle-activitie" title="Afficher la légende">
             <i class="fa-solid fa-info-circle"></i>
@@ -121,6 +127,98 @@
                 <button type="submit" class="btn btn-primary">Envoyer !</button>
                 <div id="form-feedback"></div>
             </form>
+        </div>
+    </section>
+
+    <section id="section_admin" style="display: none">
+        <div id="div_admin">
+            <h2>Liste ustilisateurs :</h2>
+            <div id="table_container">
+                <table class="table table-hover" id="table_admin">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Rôle</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td colspan="2">Larry the Bird</td>
+                        <td>@twitter</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 </div>
@@ -411,6 +509,7 @@
 <script type="module" src="../js/repeat.js"></script>
 <script type="module" src="../js/input_profil.js"></script>
 <script type="module" src="../js/message.js"></script>
+<script type="module" src="../js/admin.js"></script>
 <script src="../js/email.js"></script>
 <script src="../js/testConnexion.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>

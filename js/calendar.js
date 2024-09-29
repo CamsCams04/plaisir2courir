@@ -60,21 +60,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         eventClick: function (info) {
-            if (selectedEvent && eventsAreEqual(selectedEvent, info.event)) {
-                selectedEvent = null;
-                info.el.classList.remove('selected-event');
-                resetEventModal();
-            } else {
-                if (selectedEvent) {
-                    let prevEl = document.querySelector('.selected-event');
-                    if (prevEl) {
-                        prevEl.classList.remove('selected-event');
-                    }
+            if (selectedEvent) {
+                let prevEl = document.querySelector('.selected-event');
+                if (prevEl) {
+                    prevEl.classList.remove('selected-event');
                 }
-                selectedEvent = info.event;
-                info.el.classList.add('selected-event');
-                populateEventModal(info.event);
             }
+            selectedEvent = info.event;
+            info.el.classList.add('selected-event');
+            populateEventModal(info.event);
+
             if (auth.currentUser.uid === info.event.extendedProps.userId) {
                 document.getElementById("edit_activity").classList.remove("d-none");
                 document.getElementById("delete_activity").classList.remove("d-none");
@@ -159,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function populateSummaryModal(event) {
-        const btnList = document.getElementById('btn-list-inscription');
         const btn_close_header = document.getElementById("close_header");
         const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
@@ -231,52 +225,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             await updateRegistrationButton(event.id);
 
-            btnList.addEventListener("click", () => {
-                // Effacer le contenu précédent avant d'ajouter de nouveaux éléments
-                let body_modal = document.getElementById("body_list");
-                body_modal.innerHTML = ''; // Réinitialise le contenu du body_modal
-
-                let ul_list = document.createElement("ul");
-                ul_list.className = "list-group";
-
-                onSnapshot(eventRegistrationsQuery, (snapshot) => {
-                    snapshot.forEach((doc) => {
-                        const userRegister = doc.data();
-
-                        const usersCollection = collection(db, "users");
-                        const userRegistrationQuery = query(usersCollection, where("id", "==", userRegister.userId));
-
-                        onSnapshot(userRegistrationQuery, (snapshotUser) => {
-                            snapshotUser.forEach((docUser) => {
-                                const user = docUser.data();
-
-                                let li_list_user = document.createElement("li");
-                                li_list_user.className = "list-group-item";
-                                li_list_user.innerHTML = `
-                        <div class="row d-flex justify-content-between">
-                            <div class="col-auto">
-                                ${user.lastname.toUpperCase()} ${user.firstname}
-                            </div>
-                            <div class="col-auto text-secondary">
-                                Nb d'invité(s) : ${userRegister.nbInvite}
-                            </div>
-                        </div>
-                    `;
-
-                                ul_list.appendChild(li_list_user);
-                            });
-                        });
-                    });
-
-                    body_modal.appendChild(ul_list)
-                }, (error) => {
-                    console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
-                });
-                const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
-                modalInscription.show();
-            });
-
-
         } catch (error) {
             console.error("Erreur lors de la récupération des inscriptions:", error);
         }
@@ -314,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const registrationsCollectionInvite = collection(db, "registrations");
                 console.log(auth.currentUser.uid)
                 const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
-                
+
                 const querySnapshot = await getDocs(registrationQuery);
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach(async (docSnapshot) => {
@@ -338,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const registrationsCollectionInvite = collection(db, "registrations");
                 console.log(auth.currentUser.uid)
                 const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
-                
+
                 const querySnapshot = await getDocs(registrationQuery);
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach(async (docSnapshot) => {
@@ -592,6 +540,59 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Fonction pour visualiser les inscrits
+    document.getElementById("btn-list-inscription").addEventListener("click", async function(){
+        if (!selectedEvent || !selectedEvent.id) {
+            console.error("Aucun événement sélectionné ou l'ID de l'événement est manquant.");
+            return;
+        }
+        // Effacer le contenu précédent avant d'ajouter de nouveaux éléments
+        let body_modal = document.getElementById("body_list");
+        body_modal.innerHTML = ''; // Réinitialise le contenu du body_modal
+
+        let ul_list = document.createElement("ul");
+        ul_list.className = "list-group";
+
+        const registrationsCollection = collection(db, 'registrations');
+        const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', selectedEvent.id));
+
+        onSnapshot(eventRegistrationsQuery, (snapshot) => {
+            snapshot.forEach((doc) => {
+                const userRegister = doc.data();
+
+                const usersCollection = collection(db, "users");
+                const userRegistrationQuery = query(usersCollection, where("id", "==", userRegister.userId));
+
+                onSnapshot(userRegistrationQuery, (snapshotUser) => {
+                    snapshotUser.forEach((docUser) => {
+                        const user = docUser.data();
+
+                        let li_list_user = document.createElement("li");
+                        li_list_user.className = "list-group-item";
+                        li_list_user.innerHTML = `
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-auto">
+                            ${user.lastname.toUpperCase()} ${user.firstname}
+                        </div>
+                        <div class="col-auto text-secondary">
+                            Nb d'invité(s) : ${userRegister.nbInvite}
+                        </div>
+                    </div>
+                `;
+
+                        ul_list.appendChild(li_list_user);
+                    });
+                });
+            });
+
+            body_modal.appendChild(ul_list)
+        }, (error) => {
+            console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
+        });
+        const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
+        modalInscription.show();
+    });
+
     // Fonction pour supprimer un événement
     document.getElementById('delete_activity').addEventListener('click', async function() {
         if (selectedEvent) {
@@ -778,47 +779,54 @@ document.addEventListener('DOMContentLoaded', function () {
 // Fonction pour charger les activités du calendrier
 export async function loadCalendarActivities() {
     let calendarEl = document.getElementById('calendar_activitie');
+    let noEventsMessage = document.getElementById('no-events-message'); // Éléments pour le message
+
     let selectedDate = null;
     let selectedEvent = null;
 
     // Créer une instance de FullCalendar
     let calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
+        initialView: 'listYear',
         headerToolbar: {
-            left: 'prev,next today',
+            left: 'prev,next',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'today'
         },
         locale: 'fr',
         buttonText: {
             today: 'Aujourd\'hui',
-            month: 'Mois',
-            week: 'Semaine',
-            day: 'Jour'
+            list: 'Liste'
         },
         events: [], // Initialisation vide des événements
         eventDidMount: function (info) {
             const eventType = info.event.extendedProps.type;
             if (eventType) {
-                info.el.classList.add(eventType);
+                switch (eventType) {
+                    case "Entraînement":
+                        info.el.classList.add("entrainement");
+                        break;
+                    case "Réunion":
+                        info.el.classList.add("reunion");
+                        break;
+                    case "Compétition":
+                        info.el.classList.add("competition");
+                        break;
+                    default:
+                        console.log("Ce type n'est pas correct");
+                        break;
+                }
             }
         },
         eventClick: function (info) {
-            if (selectedEvent && eventsAreEqual(selectedEvent, info.event)) {
-                selectedEvent = null;
-                info.el.classList.remove('selected-event');
-                resetEventModal();
-            } else {
-                if (selectedEvent) {
-                    let prevEl = document.querySelector('.selected-event');
-                    if (prevEl) {
-                        prevEl.classList.remove('selected-event');
-                    }
+            if (selectedEvent) {
+                let prevEl = document.querySelector('.selected-event');
+                if (prevEl) {
+                    prevEl.classList.remove('selected-event');
                 }
-                selectedEvent = info.event;
-                info.el.classList.add('selected-event');
-                populateEventModal(info.event);
             }
+            selectedEvent = info.event;
+            info.el.classList.add('selected-event');
+            populateEventModal(info.event);
             const summaryModal = new bootstrap.Modal(document.getElementById('eventSummaryModal'));
             summaryModal.show();
 
@@ -842,7 +850,7 @@ export async function loadCalendarActivities() {
                 }
                 selectedDate = clickedDate;
                 date_modal.value = clickedDate;
-                info.dayEl.classList.add('selected-day')
+                info.dayEl.classList.add('selected-day');
             }
         }
     });
@@ -864,6 +872,7 @@ export async function loadCalendarActivities() {
 
         if (querySnapshot.empty) {
             console.log("Aucune inscription trouvée pour cet utilisateur.");
+            noEventsMessage.style.display = 'block'; // Afficher le message si aucune inscription
             calendar.render();
             return;
         }
@@ -873,6 +882,7 @@ export async function loadCalendarActivities() {
 
         if (eventIds.length === 0) {
             console.log("Aucun événement trouvé pour les inscriptions de l'utilisateur.");
+            noEventsMessage.style.display = 'block'; // Afficher le message si aucun événement
             calendar.render();
             return;
         }
@@ -887,8 +897,11 @@ export async function loadCalendarActivities() {
         const eventsSnapshot = await getDocs(eventsQuery);
 
         if (eventsSnapshot.empty) {
-            console.log("Aucune events trouvée.");
+            console.log("Aucun événement trouvé.");
+            noEventsMessage.style.display = 'block';
         } else {
+            // Masquer le message s'il y a des événements
+            noEventsMessage.style.display = 'none';
             eventsSnapshot.forEach((doc) => {
                 const eventData = doc.data();
                 calendar.addEvent({
@@ -904,8 +917,8 @@ export async function loadCalendarActivities() {
                     userId: eventData.userId
                 });
             });
+            calendar.render();
         }
-        calendar.render();
 
     } catch (error) {
         console.error("Erreur lors du chargement des activités du calendrier : ", error);
@@ -953,7 +966,6 @@ export async function loadCalendarActivities() {
     }
 
     async function populateSummaryModal(event) {
-        //const btnList = document.getElementById('btn-list-inscription');
         const btn_close_header = document.getElementById("close_header");
         const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
@@ -1025,47 +1037,6 @@ export async function loadCalendarActivities() {
 
             await updateRegistrationButton(event.id);
 
-            /*btnList.addEventListener("click", () => {
-                const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
-                modalInscription.show();
-                let ul_list = document.createElement("ul");
-                ul_list.className = "list-group";
-                onSnapshot(eventRegistrationsQuery, (snapshot) => {
-                    snapshot.forEach((doc) => {
-                        const userRegister = doc.data();
-
-                        const usersCollection = collection(db, "users");
-                        const userRegistrationQuery = query(usersCollection, where("id", "==", userRegister.userId));
-
-                        onSnapshot(userRegistrationQuery, (snapshotUser) =>{
-                            snapshotUser.forEach((docUser) => {
-                                const user = docUser.data();
-                                
-                                let li_list_user = document.createElement("li");
-                                li_list_user.className = "list-group-item";
-                                li_list_user.innerHTML = `
-                                <div class="row d-flex justify-content-between">
-                                    <div class="col-auto">
-                                        ${user.lastname.toUpperCase()} ${user.firstname}
-                                    </div>
-                                    <div class="col-auto text-secondary">
-                                        Nb d'invité(s) : ${userRegister.nbInvite}
-                                    </div>
-                                </div>
-                            ` ;
-
-                                ul_list.appendChild(li_list_user);
-                            })
-                        })
-                        let body_modal = document.getElementById("body_list");
-                        body_modal.appendChild(ul_list);
-                    });
-
-                }, (error) => {
-                    console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
-                });
-            });*/
-
         } catch (error) {
             console.error("Erreur lors de la récupération des inscriptions:", error);
         }
@@ -1092,14 +1063,14 @@ export async function loadCalendarActivities() {
         } catch (error) {
             console.error("Erreur lors de la récupération du créateur :", error);
         }
-        
+
         btn_close_footer.addEventListener("click", async () => {
             try {
                 const nbInvite = document.getElementById("activity-invite").value;
                 const registrationsCollectionInvite = collection(db, "registrations");
                 console.log(auth.currentUser.uid)
                 const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
-                
+
                 const querySnapshot = await getDocs(registrationQuery);
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach(async (docSnapshot) => {
@@ -1123,7 +1094,7 @@ export async function loadCalendarActivities() {
                 const registrationsCollectionInvite = collection(db, "registrations");
                 console.log(auth.currentUser.uid)
                 const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
-                
+
                 const querySnapshot = await getDocs(registrationQuery);
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach(async (docSnapshot) => {
@@ -1201,9 +1172,9 @@ export async function loadCalendarActivities() {
     function updateHeaderToolbar() {
         let isMobile = window.innerWidth <= 600;
         calendar.setOption('headerToolbar', {
-            left: isMobile ? 'title' : 'prev,next today',
-            center: isMobile ? 'prev,dayGridMonth,timeGridWeek,timeGridDay,next' : 'title',
-            right: isMobile ? '' : 'dayGridMonth,timeGridWeek,timeGridDay'
+            left: isMobile ? 'title' : 'prev,next',
+            center: isMobile ? 'prev,today,next' : 'title',
+            right: isMobile ? '' : 'today'
         });
     }
 }

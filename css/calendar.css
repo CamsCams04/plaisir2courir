@@ -5,3 +5,18 @@
 .fc-prev-button{
     margin-right: 5px !important;
 }
+
+#actToCal{
+    color: #4c98af !important;
+    cursor: pointer;
+}
+
+#actToCal:hover{
+    color: #57aec9 !important;
+}
+
+#no-events-message{
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+}

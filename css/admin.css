@@ -1,0 +1,37 @@
+#div_admin {
+    width: 100%;
+    height: 72vh;
+    box-sizing: border-box;
+    margin-top: 50px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#table_container {
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 30px;
+}
+
+#table_admin {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#table_admin thead {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+}
+
+#table_admin th, #table_admin td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+

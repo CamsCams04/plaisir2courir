@@ -66,6 +66,26 @@ document.getElementById('a_help').addEventListener('click', () => {
     }
 });
 
+document.getElementById('actToCal').addEventListener('click', () => {
+    const pathname = location.pathname;
+    let pathname_split = pathname.split("/");
+    if (pathname_split[pathname_split.length - 1] === "profil.html") {
+        window.location.href = "./welcome.html#calendar"; // Redirige vers welcome.html avec ancre
+    } else {
+        showSection('section_calendar');
+    }
+});
+
+document.getElementById('a_admin').addEventListener('click', () => {
+    const pathname = location.pathname;
+    let pathname_split = pathname.split("/");
+    if (pathname_split[pathname_split.length - 1] === "profil.html") {
+        window.location.href = "./welcome.html#admin"; // Redirige vers welcome.html avec ancre
+    } else {
+        showSection('section_admin');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const hash = window.location.hash;
     if (hash === "#activities") {
@@ -76,6 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('messaging');
     } else if (hash === "#help") {
         showSection('help');
+    }
+    else if (hash === "#admin") {
+        showSection('admin');
     }
 });
 

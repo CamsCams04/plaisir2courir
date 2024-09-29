@@ -199,3 +199,23 @@
         width: 100%;
     }
 }
+
+
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease; /* Animation fluide lors de la rotation */
+}
+
+#other_users {
+    display: none; /* Cacher par défaut */
+    opacity: 0; /* Initialement invisible */
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    max-height: 0; /* Hauteur maximale pour l'animation */
+    overflow: hidden; /* Masquer le débordement */
+}
+
+#other_users.show {
+    display: block; /* Afficher quand on ajoute la classe */
+    opacity: 1; /* Rendre visible */
+    max-height: 500px; /* Ajustez en fonction du contenu */
+}
