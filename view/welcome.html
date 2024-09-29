@@ -137,86 +137,12 @@
                 <table class="table table-hover" id="table_admin">
                     <thead>
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">Username</th>
-                        <th scope="col">Email</th>
                         <th scope="col">Rôle</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -496,6 +422,46 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fa-solid fa-xmark"></i> Fermer
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale de modification utilisateur -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Modifier Utilisateur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="mb-3">
+                        <label for="modal_lastname" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="modal_lastname" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_firstname" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="modal_firstname" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="modal_email" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_role" class="form-label">Rôle</label>
+                        <select id="modal_role" class="form-select">
+                            <option value="none">Aucun</option>
+                            <option value="admin">Admin</option>
+                            <option value="SUPERADMIN">SUPERADMIN</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btn_edit_role" class="btn btn-primary" data-bs-dismiss="modal">Enregistrer</button>
+
             </div>
         </div>
     </div>

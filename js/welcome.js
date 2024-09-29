@@ -76,6 +76,16 @@ document.getElementById('actToCal').addEventListener('click', () => {
     }
 });
 
+document.getElementById('logo_title').addEventListener('click', () => {
+    const pathname = location.pathname;
+    let pathname_split = pathname.split("/");
+    if (pathname_split[pathname_split.length - 1] === "profil.html") {
+        window.location.href = "./welcome.html#calendar"; // Redirige vers welcome.html avec ancre
+    } else {
+        showSection('section_calendar'); // Montre la section des activités
+    }
+});
+
 document.getElementById('a_admin').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");

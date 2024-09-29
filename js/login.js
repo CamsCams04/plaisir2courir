@@ -1,7 +1,7 @@
 // Importation des modules Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { getAuth, createUserWithEmailAndPassword, updatePassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
+import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -43,6 +43,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
             firstname: firstname,
             email: email,
             role: role,
+            disabled: false,
         });
 
         window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;
