@@ -17,22 +17,35 @@
 <div id="inscription" class="form-container" style="display: none;">
     <h2>Inscription</h2>
     <form id="signup-form" action="#">
-        <label for="lastname">Nom :</label><br>
-        <input type="text" id="lastname" required><br><br>
+        <div class="name-container">
+            <div class="form-name">
+                <label for="lastname">Nom <span class="required">*</span> :</label><br>
+                <input type="text" id="lastname" required>
+            </div>
+            <div class="form-name">
+                <label for="firstname">Prénom <span class="required">*</span> :</label><br>
+                <input type="text" id="firstname" required>
+            </div>
+        </div><br>
 
-        <label for="firstname">Prénom :</label><br>
-        <input type="text" id="firstname" required><br><br>
+        <div class="name-container">
+            <div class="form-name">
+                <label for="email">Email <span class="required">*</span> :</label><br>
+                <input type="email" id="email" required><br><br>
+            </div>
+            <div class="form-name">
+                <label for="telephone">Téléphone :</label><br>
+                <input type="tel" id="telephone"><br><br>
+            </div>
+        </div>
 
-        <label for="email">Email :</label><br>
-        <input type="email" id="email" required><br><br>
-
-        <label for="password">Mot de passe :</label><br>
+        <label for="password">Mot de passe <span class="required">*</span> :</label><br>
         <div class="password-container">
             <input type="password" id="password" required>
             <i id="toggle-password-register" class="fa-solid fa-eye"></i>
         </div><br><br>
 
-        <label for="confirm_password">Confirmer le mot de passe :</label><br>
+        <label for="confirm_password">Confirmer le mot de passe <span class="required">*</span> :</label><br>
         <div class="password-container">
             <input type="password" id="confirm_password" required>
             <i id="toggle-password-confirm" class="fa-solid fa-eye"></i>

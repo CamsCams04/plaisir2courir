@@ -99,44 +99,46 @@ async function loadUsers() {
 
         userSnapshot.forEach(doc => {
             const userData = doc.data();
-            const li = document.createElement('li');
-            li.classList.add('user-item');
-            li.dataset.userId = doc.id;
+            if(userData.id !== auth.currentUser.uid) {
+                const li = document.createElement('li');
+                li.classList.add('user-item');
+                li.dataset.userId = doc.id;
 
-            const img = document.createElement('img');
-            img.classList.add('photo_profil');
-            img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
+                const img = document.createElement('img');
+                img.classList.add('photo_profil');
+                img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
 
-            li.appendChild(img);
-            if (userData.lastname && userData.firstname) {
-                li.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
-            } else {
-                li.appendChild(document.createTextNode('Utilisateur sans nom'));
-            }
-
-            // Ajouter chaque utilisateur à la div des autres utilisateurs
-            other_users.appendChild(li);
-
-            // Ajouter un écouteur pour sélectionner un utilisateur
-            li.addEventListener('click', () => {
-                const chatHeader = document.getElementById('chat-header');
-                const messageInput = document.getElementById('message-input');
-                const chatMessages = document.getElementById('chat-messages');
-
-                // Supprimer le message d'erreur s'il existe
-                const errorMessage = document.querySelector('.error-message');
-                if (errorMessage) {
-                    chatMessages.removeChild(errorMessage);
+                li.appendChild(img);
+                if (userData.lastname && userData.firstname) {
+                    li.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
+                } else {
+                    li.appendChild(document.createTextNode('Utilisateur sans nom'));
                 }
 
-                // Mettre à jour le nom du destinataire
-                chatHeader.textContent = userData.lastname + " " + userData.firstname;
-                messageInput.dataset.receiverId = doc.id; // ID du destinataire
-                USERNAME = userData.lastname + " " + userData.firstname;
+                // Ajouter chaque utilisateur à la div des autres utilisateurs
+                other_users.appendChild(li);
 
-                // Charger les messages de l'utilisateur sélectionné
-                loadMessages(doc.id);
-            });
+                // Ajouter un écouteur pour sélectionner un utilisateur
+                li.addEventListener('click', () => {
+                    const chatHeader = document.getElementById('chat-header');
+                    const messageInput = document.getElementById('message-input');
+                    const chatMessages = document.getElementById('chat-messages');
+
+                    // Supprimer le message d'erreur s'il existe
+                    const errorMessage = document.querySelector('.error-message');
+                    if (errorMessage) {
+                        chatMessages.removeChild(errorMessage);
+                    }
+
+                    // Mettre à jour le nom du destinataire
+                    chatHeader.textContent = userData.lastname + " " + userData.firstname;
+                    messageInput.dataset.receiverId = doc.id; // ID du destinataire
+                    USERNAME = userData.lastname + " " + userData.firstname;
+
+                    // Charger les messages de l'utilisateur sélectionné
+                    loadMessages(doc.id);
+                });
+            }
         });
 
         // Ajouter le bouton "Autres utilisateurs" et la liste des autres utilisateurs à la liste
@@ -277,14 +279,13 @@ async function loadMessages(receiverId) {
                 // Charger tous les messages du canal de groupe
                 messagesQuery = query(messagesCollection,
                     where('receiverId', '==', 'group'),
-                    orderBy('timestamp')
+                    orderBy('timestamp', 'asc')
                 );
             } else {
-                let messagesReceiverQuery = query(messagesCollection,
-                    where("receiverId", "in", [user.uid, receiverId]),
-                );
-                messagesQuery = query(messagesReceiverQuery,
-                    where("senderId", "in", [user.uid, receiverId]),
+                messagesQuery = query(messagesCollection,
+                    where('receiverId', 'in', [user.uid, receiverId]),
+                    where('senderId', 'in', [user.uid, receiverId]),
+                    orderBy('timestamp', 'asc') // Tri des messages par date dans l'ordre croissant
                 );
             }
 
@@ -328,6 +329,7 @@ async function loadMessages(receiverId) {
         }
     }
 }
+
 
 // Charger les messages au démarrage
 document.addEventListener('DOMContentLoaded', () => {

@@ -19,6 +19,11 @@ body {
     text-align: center;
     box-sizing: border-box;
     margin: 10px;
+    overflow: auto;
+}
+
+#inscription.form-container{
+    max-width: 600px;
 }
 
 h2 {
@@ -55,7 +60,8 @@ label {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="tel"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -72,7 +78,7 @@ input[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-bottom: 10px; /* Ajoute de l'espace sous le bouton */
+    margin-bottom: 10px;
 }
 
 input[type="submit"]:hover {
@@ -111,4 +117,45 @@ a:hover {
     h2 {
         font-size: 20px;
     }
+
+    .name-container input {
+        width: 100%;
+    }
+}
+
+.required {
+    color: red;
+    font-weight: bold;
+}
+
+#inscription{
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.name-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.name-container input {
+    width: 100%;
+}
+
+#lastname{
+    margin-right: 5px;
+}
+
+#firstname{
+    margin-left: 5px;
+}
+
+#email{
+    margin-right: 5px;
+}
+#telephone{
+    margin-left: 5px;
+}
+.form-name{
+    width: 100%;
 }

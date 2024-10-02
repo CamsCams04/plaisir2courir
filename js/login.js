@@ -84,19 +84,26 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
         const user = userCredential.user;
 
-        if (!lastname) {
-            const userDocRef = doc(db, 'users', user.uid);
-            const userDocSnapshot = await getDoc(userDocRef);
+        // Récupérer les informations de l'utilisateur dans Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
 
-            if (!userDocSnapshot.exists()) {
-                throw new Error('Utilisateur non trouvé dans la base de données');
-            }
-
-            const userDoc = userDocSnapshot.data();
-            lastname = userDoc.lastname;
-            firstname = userDoc.firstname;
+        if (!userDocSnapshot.exists()) {
+            throw new Error('Utilisateur non trouvé dans la base de données');
         }
 
+        const userDoc = userDocSnapshot.data();
+        lastname = userDoc.lastname;
+        firstname = userDoc.firstname;
+
+        // Vérifier si l'utilisateur est désactivé
+        if (userDoc.disabled === true) {
+            // Rediriger vers return.html pour confirmation
+            window.location.href = `return.html?uid=${user.uid}&firstname=${encodeURIComponent(firstname)}`;
+            return;
+        }
+
+        // Si l'utilisateur n'est pas désactivé, rediriger vers welcome.html
         window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;
     } catch (error) {
         document.getElementById('login-error').textContent = `Erreur lors de la connexion : ${error.message}`;
