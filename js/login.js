@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, updatePassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import {Telephone} from "./Classe/Telephone.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -24,9 +25,12 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
     const lastname = document.getElementById('lastname').value;
     const firstname = document.getElementById('firstname').value;
     const email = document.getElementById('email').value;
+    const telephone = document.getElementById('telephone').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     const role = document.getElementById("none");
+
+    const numTel = new Telephone(telephone);
 
     if (password !== confirmPassword) {
         document.getElementById('signup-error').textContent = "Les mots de passe ne correspondent pas !";
@@ -42,6 +46,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
             lastname: lastname,
             firstname: firstname,
             email: email,
+            telephone: numTel.getTelephone(),
             role: role,
             disabled: false,
         });

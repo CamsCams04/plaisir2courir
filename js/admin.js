@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth, deleteUser, signOut, onAuthStateChanged, updateEmail, updatePassword } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, setDoc, doc, collection, query, where, getDocs, deleteDoc,  writeBatch, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import {Telephone} from "./Classe/Telephone.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -77,9 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                     onSnapshot(userModifierQuery, (snapshotModifier) => {
                                         snapshotModifier.forEach((docUser) => {
                                             const userData = docUser.data();
+                                            const numTel = new Telephone(userData.telephone);
                                             document.getElementById("modal_lastname").value = userData.lastname;
                                             document.getElementById("modal_firstname").value = userData.firstname;
                                             document.getElementById("modal_email").value = userData.email;
+                                            document.getElementById("modal_telephone").value = numTel.formatWithDashes();
                                             document.getElementById("modal_role").value = userData.role;
 
                                             const userModal = new bootstrap.Modal(document.getElementById("userModal"));
@@ -114,6 +117,8 @@ document.getElementById("btn_edit_role").addEventListener("click", async ()=>{
         const updatedLastname = document.getElementById("modal_lastname").value;
         const updatedFirstname = document.getElementById("modal_firstname").value;
         const updatedEmail = document.getElementById("modal_email").value;
+        const updateTelephone = document.getElementById("modal_telephone").value;
+        const numTel = new Telephone(updateTelephone);
 
         const userDocRef = doc(db, "users", userToUpdateId);
 
@@ -121,6 +126,7 @@ document.getElementById("btn_edit_role").addEventListener("click", async ()=>{
             lastname: updatedLastname,
             firstname: updatedFirstname,
             email: updatedEmail,
+            telephone: numTel.formatTelephone(),
             role: updatedRole
         };
 

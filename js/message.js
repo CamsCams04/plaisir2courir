@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getFirestore, collection, getDocs, getDoc, doc, addDoc, serverTimestamp, query, orderBy, onSnapshot, where } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js'; // Importer getAuth
+import { Telephone } from "./Classe/Telephone.js";
 
 let USERNAME;
 // Configuration de Firebase
@@ -108,12 +109,27 @@ async function loadUsers() {
                 img.classList.add('photo_profil');
                 img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
 
+                const infoUser = document.createElement("div");
+                infoUser.classList.add("user-info");
+
                 li.appendChild(img);
                 if (userData.lastname && userData.firstname) {
-                    li.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
+                    infoUser.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
                 } else {
-                    li.appendChild(document.createTextNode('Utilisateur sans nom'));
+                    infoUser.appendChild(document.createTextNode('Utilisateur sans nom'));
                 }
+
+                const phoneElement = document.createElement('small');
+                if (userData.telephone) {
+                    const telephone = new Telephone(userData.telephone)
+                    phoneElement.textContent = telephone.formatWithDashes();
+                } else {
+                    phoneElement.textContent = '';
+                }
+                phoneElement.style.display = 'block';
+                phoneElement.style.fontSize = '0.8em';
+                infoUser.appendChild(phoneElement);
+                li.appendChild(infoUser);
 
                 // Ajouter chaque utilisateur à la div des autres utilisateurs
                 other_users.appendChild(li);
@@ -305,6 +321,9 @@ async function loadMessages(receiverId) {
                     senderName.classList.add('message-sender');
                     senderName.textContent = messageData.senderId === user.uid ? 'Moi' : messageData.senderName || 'Utilisateur inconnu';
 
+                    const divInfo = document.createElement("div");
+                    divInfo.classList.add("divInfo");
+
                     const messageDate = document.createElement('div');
                     messageDate.classList.add('message-date');
                     const date = messageData.timestamp ? new Date(messageData.timestamp.toDate()).toLocaleString() : 'Date inconnue';
@@ -312,13 +331,29 @@ async function loadMessages(receiverId) {
 
                     messageElement.appendChild(senderName);
                     messageElement.appendChild(messageContent);
-                    messageElement.appendChild(messageDate);
+                    divInfo.appendChild(messageDate);
 
                     if (messageData.senderId === user.uid) {
                         messageElement.classList.add('sender'); // Messages envoyés par l'utilisateur
                     } else {
                         messageElement.classList.add('receiver'); // Messages reçus
                     }
+
+                    let usersCollection = collection(db, "users");
+                    let queryUser = query(usersCollection, where("id", "==", messageData.senderId));
+
+                    onSnapshot(queryUser, (snapshotUser)=>{
+                        snapshotUser.forEach(doc =>{
+                            let userTelephone = doc.data();
+                            const messageTelephone = document.createElement('div');
+                            messageTelephone.classList.add('message-telephone');
+                            const telephone = new Telephone(userTelephone.telephone);
+                            messageTelephone.textContent = telephone.formatWithDashes();
+                            divInfo.appendChild(messageTelephone);
+                        })
+                    })
+
+                    messageElement.appendChild(divInfo);
 
                     chatMessages.appendChild(messageElement);
                 });

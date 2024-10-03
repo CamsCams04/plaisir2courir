@@ -47,6 +47,11 @@
     align-items: center;
 }
 
+.user-info{
+    display: flex;
+    flex-direction: column;
+}
+
 .user-item:hover {
     background-color: #4c98af;
 }
@@ -159,7 +164,10 @@
     margin-bottom: 2px;
 }
 
-.message-date {
+.divInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     font-size: 0.75em;
     color: rgb(128, 128, 128);
     margin-top: 2px;

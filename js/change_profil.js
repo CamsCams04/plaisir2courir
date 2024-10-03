@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth, deleteUser, signOut, onAuthStateChanged, updateEmail, updatePassword } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, setDoc, doc, collection, query, where, getDocs, deleteDoc,  writeBatch, getDoc } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import {Telephone} from "./Classe/Telephone.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -27,10 +28,12 @@ async function displayUserInfo(user) {
 
             if (userDoc.exists()) {
                 const userData = userDoc.data();
+                const tel = new Telephone(userData.telephone);
                 // Remplir les champs avec les données de l'utilisateur
                 document.getElementById('lastname').value = userData.lastname || '';
                 document.getElementById("firstname").value = userData.firstname || "";
                 document.getElementById('email').value = userData.email || '';
+                document.getElementById('telephone').value = tel.formatWithDashes() || '';
                 document.getElementById('profile-pic').src = userData.img || '../img/photo_profil.png';
                 document.getElementById('change_img').src = userData.img || '../img/photo_profil.png';
                 document.getElementById('file_img').dataset.base64 = userData.img || '';
@@ -69,11 +72,14 @@ document.getElementById('form_profil').addEventListener('submit', async (e) => {
     const lastname = document.getElementById('lastname').value;
     const firstname = document.getElementById("firstname").value;
     const email = document.getElementById('email').value;
+    const telephone = document.getElementById('telephone').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     const profileImage = document.getElementById('file_img').dataset.base64; // Obtient la valeur base64 stockée
 
     const updates = {};
+
+    const numTel = new Telephone(telephone);
 
     if (lastname && lastname !== user.lastname) {
         updates.lastname = lastname;
@@ -95,6 +101,10 @@ document.getElementById('form_profil').addEventListener('submit', async (e) => {
             }
             return;
         }
+    }
+
+    if (telephone && numTel.getTelephone() !== user.telephone){
+        updates.telephone = numTel.getTelephone();
     }
 
     if (password) {
