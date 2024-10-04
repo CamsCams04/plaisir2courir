@@ -249,3 +249,7 @@ body {
     border: 2px solid #ff0000;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
+
+#activity-edit-description{
+    height: 6rem;
+}

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../css/calendar.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/email.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 </head>
 <body>
@@ -39,6 +40,10 @@
 
 <!-- Main Content -->
 <div id="main-content">
+    <div class="overlay" id="overlay">
+        <p id="mess_loader"></p>
+        <div class="loader"></div>
+    </div>
     <section id="activities" style="display: none">
         <div id='calendar_activitie'>
             <div id="no-events-message" style="">
@@ -120,13 +125,13 @@
     <section id="help" style="display: none">
         <div id="div_help">
             <h2>Aide</h2>
-            <form id="bug-report-form" onsubmit="event.preventDefault(); sendEmail();">
+            <form id="bug-report-form">
                 <label for="bug-description">Description du Bug:</label><br>
                 <textarea id="bug-description" name="bug-description" required></textarea><br><br>
                 <input type="hidden" name="_replyto" value="noreplyplaisir2courir@gmail.com">
-                <button type="submit" class="btn btn-primary">Envoyer !</button>
-                <div id="form-feedback"></div>
             </form>
+            <button id="submit-bug" class="btn btn-primary">Envoyer !</button>
+            <div id="form-feedback"></div>
         </div>
     </section>
 
@@ -480,7 +485,7 @@
 <script type="module" src="../js/input_profil.js"></script>
 <script type="module" src="../js/message.js"></script>
 <script type="module" src="../js/admin.js"></script>
-<script src="../js/email.js"></script>
+<script type="module" src="../js/email.js"></script>
 <script src="../js/testConnexion.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 </body>

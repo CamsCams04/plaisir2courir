@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebas
 import { getFirestore, collection, getDocs, getDoc, doc, addDoc, serverTimestamp, query, orderBy, onSnapshot, where } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js'; // Importer getAuth
 import { Telephone } from "./Classe/Telephone.js";
+import {sendEmailMessage} from "./email.js";
 
 let USERNAME;
 // Configuration de Firebase
@@ -250,29 +251,6 @@ async function sendMessage() {
         }
     } else {
         console.error('Le message est vide ou l\'utilisateur n\'est pas connecté.');
-    }
-
-    function sendEmailMessage(senderName, message, receiverEmail) {
-        // Les paramètres à envoyer avec le template
-        const templateParams = {
-            message_content: message,
-            sender_name: senderName,
-            subject: "Nouveau Message !",
-            receiverEmail: receiverEmail.join(", "),
-        };
-    
-        // Appel de la méthode EmailJS pour envoyer l'email
-        emailjs.send('service_ywd4kkv', 'template_kya5cod', templateParams)
-            .then(function(response) {
-                console.log('Email envoyé avec succès !', response.status, response.text);
-                document.getElementById("form-feedback").textContent = 'Email envoyé avec succès !';
-                document.getElementById("form-feedback").style.color = "green";
-                document.getElementById('bug-description').value = "";
-            }, function(error) {
-                console.error('Erreur lors de l\'envoi de l\'email :', error);
-                document.getElementById("form-feedback").textContent = 'Erreur lors de l\'envoi de l\'email.';
-                document.getElementById("form-feedback").style.color = "red";
-            });
     }
 }
 

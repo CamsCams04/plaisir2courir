@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId  } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { sendEmailSuppr } from "./email.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -619,65 +620,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Erreur : Aucun événement sélectionné.');
         }
     });
-
-    // Fonction envoie de mail de suppression
-    async function sendEmailSuppr(selectedEvent) {
-        if (!selectedEvent) {
-            console.error('Aucun événement sélectionné pour envoyer les emails.');
-            return;
-        }
-        const eventId = selectedEvent.id;
-        try {
-            // Récupérer les inscrits à cet événement depuis Firestore
-            const registrationsRef = collection(db, 'registrations');
-            const registrationQuery = query(registrationsRef, where('eventId', '==', eventId));
-            const querySnapshot = await getDocs(registrationQuery);
-
-            const emails = [];
-            for (const doc of querySnapshot.docs) {
-                const data = doc.data();
-                // Créer une requête pour obtenir les détails de l'utilisateur avec l'userId
-                const userQuery = query(collection(db, 'users'), where("id", "==", data.userId));
-                const querySnapshotUser = await getDocs(userQuery); // Utiliser await ici
-                querySnapshotUser.forEach((docUser) => {
-                    const dataUser = docUser.data();
-                    if (dataUser.email) {
-                        emails.push(dataUser.email); // Ajouter l'email à la liste
-                    }
-                });
-            }
-            // Vérifie s'il y a des emails à qui envoyer
-            if (emails.length === 0) {
-                console.log("Aucun inscrit à notifier.");
-                return;
-            }
-            const startDate = new Date(selectedEvent.start);
-            const endDate = new Date(selectedEvent.end);
-            startDate.toLocaleDateString('fr-FR')
-            const date = startDate.toLocaleDateString('fr-FR') + " " +
-                startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + " / "
-                + endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-
-            console.log(selectedEvent.title);
-            const templateParams = {
-                event_title: selectedEvent.title,
-                event_date: date,
-                event_location: selectedEvent.location,
-                emails: emails.join(", "),
-            };
-
-            emailjs.send('service_ywd4kkv', 'template_2uvkxo9', templateParams)
-                .then(function(response) {
-                    console.log('Emails envoyés avec succès !', response.status, response.text);
-                }, function(error) {
-                    console.error('Erreur lors de l\'envoi des emails :', error);
-                });
-
-        } catch (error) {
-            console.error("Erreur lors de la récupération des inscrits :", error);
-        }
-    }
-
 
     // Fonction pour mettre à jour la barre d'outils en fonction de la taille de la fenêtre
     function updateHeaderToolbar() {
