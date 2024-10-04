@@ -74,7 +74,7 @@ function sendEmailBug(mail, lastname, firstname){
         "bug",
         "noreplyplaisir2courir@gmail.com",
         {
-            redirectUrl: "https://camscams04.github.io/plaisir2courir/view/redirectEmail.html",
+            redirectUrl: "https://camscams04.github.io/plaisir2courir/view/redirectEmail",
             message: document.getElementById("bug-description").value,
         },
         `${firstname} ${lastname}`,
