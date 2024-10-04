@@ -63,7 +63,9 @@ if(submitBug){
 }
 
 if(returnBtn){
+    returnBtn.addEventListener("click", ()=>{
     window.location = "../view/welcome.html";
+    })
 }
 
 function sendEmailBug(mail, lastname, firstname){
