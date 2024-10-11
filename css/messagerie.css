@@ -219,11 +219,29 @@
     opacity: 0; /* Initialement invisible */
     transition: opacity 0.5s ease, max-height 0.5s ease;
     max-height: 0; /* Hauteur maximale pour l'animation */
-    overflow: hidden; /* Masquer le débordement */
+    overflow: auto; /* Masquer le débordement */
 }
 
 #other_users.show {
     display: block; /* Afficher quand on ajoute la classe */
     opacity: 1; /* Rendre visible */
-    max-height: 500px; /* Ajustez en fonction du contenu */
+    max-height: 350px; /* Ajustez en fonction du contenu */
+}
+
+#other_users::-webkit-scrollbar{
+    width: 20px;
+}
+
+#other_users::-webkit-scrollbar-track{
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+#other_users::-webkit-scrollbar-thumb{
+    background: #4c98af;
+    border-radius: 10px;
+}
+
+#other_users::-webkit-scrollbar-thumb:hover{
+    background: #1e6062;
 }

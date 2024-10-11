@@ -368,6 +368,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+    // Réinitialiser la modal d'ajout d'une activité
+    document.getElementById("add_activity").addEventListener("click", ()=>{
+        document.getElementById('activity-name').value = "";
+        document.getElementById('activity-type').value = "";
+        document.getElementById('activity-start-time').value = "";
+        document.getElementById('activity-end-time').value = "";
+        document.getElementById('activity-location').value = "";
+        document.getElementById('activity-description').value = "";
+        document.getElementById('activity-repeat').value = "";
+        document.getElementById("repeat-weeks").value = 1;
+    })
 
     // Fonction pour ajouter un événement
     document.getElementById('activity-form').addEventListener('submit', async function(event) {
