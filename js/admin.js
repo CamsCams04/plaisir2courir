@@ -41,32 +41,47 @@ document.addEventListener("DOMContentLoaded", () => {
                         onSnapshot(activeUsersQuery, (snapshotUsers) => {
                             const table_admin = document.querySelector("#table_admin tbody");
                             table_admin.innerHTML = "";
+                            
+                            // Récupérer les utilisateurs dans un tableau
+                            const usersList = [];
                             snapshotUsers.forEach((docUser) => {
                                 const userData = docUser.data();
                                 const userId = docUser.id;
-
-
+                        
                                 if (userData.role !== "SUPERADMIN") {
-                                    const tr_admin = document.createElement("tr");
                                     const username = userData.lastname.toUpperCase() + " " + userData.firstname;
-                                    let role = userData.role;
-                                    if (role === null) {
-                                        role = "Aucun";
-                                    }
-
-                                    tr_admin.innerHTML = `
-                                      <td>${username}</td>
-                                      <td>${role}</td>
-                                      <td>
-                                          <a class="text-secondary btn btn-light btn-modifier" data-user-id="${userId}"><i class="fa-solid fa-pen"></i></a>
-                                          <a class="text-danger btn btn-light btn-delete" data-user-id="${userId}"><i class="fa-solid fa-trash"></i></a>
-                                      </td>
-                                    `;
-
-                                    table_admin.appendChild(tr_admin);
+                                    usersList.push({
+                                        id: userId,
+                                        lastname: userData.lastname,
+                                        firstname: userData.firstname,
+                                        role: userData.role || "Aucun",
+                                        username: username
+                                    });
                                 }
                             });
-
+                        
+                            // Trier les utilisateurs par leur nom (prénom + nom)
+                            usersList.sort((a, b) => {
+                                const nameA = a.lastname + " " + a.firstname;
+                                const nameB = b.lastname + " " + b.firstname;
+                                return nameA.localeCompare(nameB);  // Tri alphabétique
+                            });
+                        
+                            // Afficher les utilisateurs triés dans le tableau
+                            usersList.forEach((user) => {
+                                const tr_admin = document.createElement("tr");
+                                tr_admin.innerHTML = `
+                                    <td>${user.username}</td>
+                                    <td>${user.role}</td>
+                                    <td>
+                                        <a class="text-secondary btn btn-light btn-modifier" data-user-id="${user.id}"><i class="fa-solid fa-pen"></i></a>
+                                        <a class="text-danger btn btn-light btn-delete" data-user-id="${user.id}"><i class="fa-solid fa-trash"></i></a>
+                                    </td>
+                                `;
+                                table_admin.appendChild(tr_admin);
+                            });
+                        
+                            // Gestion des boutons de modification et de suppression
                             const btnsModifier = document.querySelectorAll(".btn-modifier");
                             btnsModifier.forEach((btn) => {
                                 btn.addEventListener("click", (e) => {
@@ -74,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     userToUpdateId = btn.getAttribute("data-user-id");
                                     const userId = btn.getAttribute("data-user-id");
                                     const userModifierQuery = query(usersCollection, where("id", "==", userId));
-
+                        
                                     onSnapshot(userModifierQuery, (snapshotModifier) => {
                                         snapshotModifier.forEach((docUser) => {
                                             const userData = docUser.data();
@@ -84,27 +99,28 @@ document.addEventListener("DOMContentLoaded", () => {
                                             document.getElementById("modal_email").value = userData.email;
                                             document.getElementById("modal_telephone").value = numTel.formatWithDashes();
                                             document.getElementById("modal_role").value = userData.role;
-
+                        
                                             const userModal = new bootstrap.Modal(document.getElementById("userModal"));
                                             userModal.show();
                                         });
                                     });
                                 });
                             });
-
+                        
                             const btnsDelete = document.querySelectorAll(".btn-delete");
                             btnsDelete.forEach((btn) => {
                                 btn.addEventListener("click", async (e) => {
                                     const userIdToDelete = btn.getAttribute("data-user-id");
-
+                        
                                     // Demande de confirmation
-                                    const confirmation = confirm("Êtes-vous sûr de vouloir supprimer ce compte utilisateur ?");
+                                    const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ce compte utilisateur ? ${userIdToDelete}`);
                                     if (confirmation) {
                                         await deleteUserAccount(userIdToDelete);
                                     }
                                 });
                             });
                         });
+                        
                     }
                 });
             });
