@@ -99,63 +99,78 @@ async function loadUsers() {
             }
         });
 
+        // Créer un tableau d'utilisateurs
+        const usersArray = [];
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             if(userData.id !== auth.currentUser.uid) {
-                const li = document.createElement('li');
-                li.classList.add('user-item');
-                li.dataset.userId = doc.id;
-
-                const img = document.createElement('img');
-                img.classList.add('photo_profil');
-                img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
-
-                const infoUser = document.createElement("div");
-                infoUser.classList.add("user-info");
-
-                li.appendChild(img);
-                if (userData.lastname && userData.firstname) {
-                    infoUser.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
-                } else {
-                    infoUser.appendChild(document.createTextNode('Utilisateur sans nom'));
-                }
-
-                const phoneElement = document.createElement('small');
-                if (userData.telephone) {
-                    const telephone = new Telephone(userData.telephone)
-                    phoneElement.textContent = telephone.formatWithDashes();
-                } else {
-                    phoneElement.textContent = '';
-                }
-                phoneElement.style.display = 'block';
-                phoneElement.style.fontSize = '0.8em';
-                infoUser.appendChild(phoneElement);
-                li.appendChild(infoUser);
-
-                // Ajouter chaque utilisateur à la div des autres utilisateurs
-                other_users.appendChild(li);
-
-                // Ajouter un écouteur pour sélectionner un utilisateur
-                li.addEventListener('click', () => {
-                    const chatHeader = document.getElementById('chat-header');
-                    const messageInput = document.getElementById('message-input');
-                    const chatMessages = document.getElementById('chat-messages');
-
-                    // Supprimer le message d'erreur s'il existe
-                    const errorMessage = document.querySelector('.error-message');
-                    if (errorMessage) {
-                        chatMessages.removeChild(errorMessage);
-                    }
-
-                    // Mettre à jour le nom du destinataire
-                    chatHeader.textContent = userData.lastname + " " + userData.firstname;
-                    messageInput.dataset.receiverId = doc.id; // ID du destinataire
-                    USERNAME = userData.lastname + " " + userData.firstname;
-
-                    // Charger les messages de l'utilisateur sélectionné
-                    loadMessages(doc.id);
-                });
+                usersArray.push({id: doc.id, data: userData});
             }
+        });
+
+        // Trier les utilisateurs par nom (ordre alphabétique)
+        usersArray.sort((a, b) => {
+            const nameA = `${a.data.lastname} ${a.data.firstname}`.toLowerCase();
+            const nameB = `${b.data.lastname} ${b.data.firstname}`.toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
+        // Ajouter chaque utilisateur trié à la liste
+        usersArray.forEach(user => {
+            const userData = user.data;
+            const li = document.createElement('li');
+            li.classList.add('user-item');
+            li.dataset.userId = user.id;
+
+            const img = document.createElement('img');
+            img.classList.add('photo_profil');
+            img.src = userData.img || '../img/photo_profil.png'; // Image de profil par défaut
+
+            const infoUser = document.createElement("div");
+            infoUser.classList.add("user-info");
+
+            li.appendChild(img);
+            if (userData.lastname && userData.firstname) {
+                infoUser.appendChild(document.createTextNode(userData.lastname + " " + userData.firstname));
+            } else {
+                infoUser.appendChild(document.createTextNode('Utilisateur sans nom'));
+            }
+
+            const phoneElement = document.createElement('small');
+            if (userData.telephone) {
+                const telephone = new Telephone(userData.telephone);
+                phoneElement.textContent = telephone.formatWithDashes();
+            } else {
+                phoneElement.textContent = '';
+            }
+            phoneElement.style.display = 'block';
+            phoneElement.style.fontSize = '0.8em';
+            infoUser.appendChild(phoneElement);
+            li.appendChild(infoUser);
+
+            // Ajouter chaque utilisateur à la div des autres utilisateurs
+            other_users.appendChild(li);
+
+            // Ajouter un écouteur pour sélectionner un utilisateur
+            li.addEventListener('click', () => {
+                const chatHeader = document.getElementById('chat-header');
+                const messageInput = document.getElementById('message-input');
+                const chatMessages = document.getElementById('chat-messages');
+
+                // Supprimer le message d'erreur s'il existe
+                const errorMessage = document.querySelector('.error-message');
+                if (errorMessage) {
+                    chatMessages.removeChild(errorMessage);
+                }
+
+                // Mettre à jour le nom du destinataire
+                chatHeader.textContent = userData.lastname + " " + userData.firstname;
+                messageInput.dataset.receiverId = user.id; // ID du destinataire
+                USERNAME = userData.lastname + " " + userData.firstname;
+
+                // Charger les messages de l'utilisateur sélectionné
+                loadMessages(user.id);
+            });
         });
 
         // Ajouter le bouton "Autres utilisateurs" et la liste des autres utilisateurs à la liste
@@ -166,8 +181,6 @@ async function loadUsers() {
         console.error('Erreur lors de la récupération des utilisateurs:', error);
     }
 }
-
-
 
 // Fonction pour envoyer un message
 async function sendMessage() {

@@ -30,7 +30,7 @@ document.getElementById('a_activities').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#activities"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#activities";
     } else {
         showSection('activities');
     }
@@ -40,7 +40,7 @@ document.getElementById('a_calendar').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#calendar"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#calendar";
     } else {
         showSection('section_calendar');
     }
@@ -50,7 +50,7 @@ document.getElementById('a_messaging').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#messaging"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#messaging";
     } else {
         showSection('messaging');
     }
@@ -60,7 +60,7 @@ document.getElementById('a_help').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#help"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#help";
     } else {
         showSection('help');
     }
@@ -70,7 +70,7 @@ document.getElementById('actToCal').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#calendar"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#calendar";
     } else {
         showSection('section_calendar');
     }
@@ -80,7 +80,7 @@ document.getElementById('logo_title').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#calendar"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#calendar";
     } else {
         showSection('section_calendar'); // Montre la section des activités
     }
@@ -90,7 +90,7 @@ document.getElementById('a_admin').addEventListener('click', () => {
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#admin"; // Redirige vers welcome.html avec ancre
+        window.location.href = "./welcome.html#admin";
     } else {
         showSection('section_admin');
     }
