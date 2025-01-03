@@ -109,6 +109,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         }
 
         // Si l'utilisateur n'est pas désactivé, rediriger vers welcome.html
+        localStorage.setItem('isLoggedIn', 'true');
         window.location.href = `welcome.html?firstname=${encodeURIComponent(firstname)}`;
     } catch (error) {
         document.getElementById('login-error').textContent = `Erreur lors de la connexion : ${error.message}`;

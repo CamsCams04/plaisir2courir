@@ -97,6 +97,16 @@ document.getElementById('a_admin').addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+    if (isLoggedIn == 'true'){
+        setTimeout(function() {
+            window.location.hash = "#activities";
+            showSection('activities');
+            localStorage.setItem('isLoggedIn', 'false');
+        }, 250);
+    }    
     const hash = window.location.hash;
     if (hash === "#activities") {
         showSection('activities');
@@ -128,3 +138,7 @@ function clickOutside(event) {
 
 // Ajouter le gestionnaire de clic au document
 document.addEventListener('click', clickOutside);
+
+document.addEventListener("DOMContentLoaded", ()=>{
+
+});
