@@ -1,6 +1,5 @@
 export class Telephone {
     constructor(num) {
-        console.log(num)
         this.num = this.formatTelephone(num);
     }
 
