@@ -1,5 +1,6 @@
 export class Telephone {
     constructor(num) {
+        console.log(num)
         this.num = this.formatTelephone(num);
     }
 
@@ -7,6 +8,8 @@ export class Telephone {
         let cleanedNum = num.replace(/\D/g, '');
         if (cleanedNum.length === 10) {
             return cleanedNum;
+        }else{
+            return "0000000000";
         }
     }
 
