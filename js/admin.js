@@ -273,34 +273,3 @@ function filterAndDisplayUsers(searchQuery) {
         });
     });
 }
-
-// Fonction pour récupérer et trier les utilisateurs
-onSnapshot(activeUsersQuery, (snapshotUsers) => {
-    const usersList = [];
-    snapshotUsers.forEach((docUser) => {
-        const userData = docUser.data();
-        const userId = docUser.id;
-
-        if (userData.role !== "SUPERADMIN") {
-            const username = userData.lastname.toUpperCase() + " " + userData.firstname;
-            usersList.push({
-                id: userId,
-                lastname: userData.lastname,
-                firstname: userData.firstname,
-                role: userData.role || "Aucun",
-                username: username,
-                email: userData.email // Ajouter l'email pour la recherche
-            });
-        }
-    });
-
-    // Trier les utilisateurs par leur nom (prénom + nom)
-    usersList.sort((a, b) => {
-        const nameA = a.lastname + " " + a.firstname;
-        const nameB = b.lastname + " " + b.firstname;
-        return nameA.localeCompare(nameB);  // Tri alphabétique
-    });
-
-    // Afficher les utilisateurs triés initialement
-    filterAndDisplayUsers(""); // Afficher tous les utilisateurs au départ
-});
