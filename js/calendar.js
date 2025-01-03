@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateEventModal(info.event);
             });
             populateSummaryModal(info.event);
+            summaryModal.hide();
         },
         dateClick: function (info) {
             const clickedDate = info.dateStr;
@@ -215,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Si l'utilisateur n'est pas inscrit, afficher 0
                     const activityInviteElement = document.getElementById("activity-invite");
                     if (activityInviteElement) {
-                        activityInviteElement.textContent = 0;
+                        activityInviteElement.value = 0; // Définit la valeur par défaut à 0
                     } else {
                         console.error("Élément #activity-invite introuvable dans le DOM.");
                     }
@@ -257,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error("Erreur lors de la récupération du créateur :", error);
         }
 
-        btn_close_footer.addEventListener("click", async () => {
+        // Fonction d'écouteur pour la fermeture
+        const handleClose = async () => {
             try {
                 const nbInvite = document.getElementById("activity-invite").value;
                 const registrationsCollectionInvite = collection(db, "registrations");
@@ -279,30 +281,16 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (error) {
                 console.error('Erreur lors de la mise à jour de nbInvite:', error);
             }
-        });
 
-        btn_close_header.addEventListener("click", async ()=>{
-            try {
-                const nbInvite = document.getElementById("activity-invite").value;
-                const registrationsCollectionInvite = collection(db, "registrations");
-                console.log(auth.currentUser.uid)
-                const registrationQuery = query(registrationsCollectionInvite, where("eventId", "==", event.id), where("userId", "==", auth.currentUser.uid));
+            // Supprimez l'écouteur d'événement une fois qu'il est utilisé
+            [btn_close_header, btn_close_footer].forEach((btn) => {
+                btn.removeEventListener("click", handleClose);
+            });
+        };
 
-                const querySnapshot = await getDocs(registrationQuery);
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach(async (docSnapshot) => {
-                        const registrationDocRef = doc(db, 'registrations', docSnapshot.id);
-
-                        await updateDoc(registrationDocRef, {
-                            nbInvite: parseInt(nbInvite)
-                        });
-
-                        console.log(`nbInvite mis à jour pour l'inscription de l'événement ${event.id}`);
-                    });
-                }
-            } catch (error) {
-                console.error('Erreur lors de la mise à jour de nbInvite:', error);
-            }
+        // Ajoutez l'écouteur d'événement pour les deux boutons
+        [btn_close_header, btn_close_footer].forEach((btn) => {
+            btn.addEventListener("click", handleClose);
         });
     }
 
@@ -786,7 +774,7 @@ export async function loadCalendarActivities() {
             document.getElementById('edit_activity').addEventListener("click", () => {
                 populateEventModal(info.event);
             });
-            populateSummaryModal(info.event);
+            populateSummaryModal(info.event, summaryModal);
         },
         dateClick: function (info) {
             const clickedDate = info.dateStr;
