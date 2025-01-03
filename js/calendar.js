@@ -724,9 +724,13 @@ export async function loadCalendarActivities() {
     let selectedDate = null;
     let selectedEvent = null;
 
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+
     // Créer une instance de FullCalendar
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'listYear',
+        initialDate: todayFormatted,
         headerToolbar: {
             left: 'prev,next',
             center: 'title',
@@ -734,7 +738,7 @@ export async function loadCalendarActivities() {
         },
         locale: 'fr',
         buttonText: {
-            today: 'Aujourd\'hui',
+            today: 'Année en cours',
             list: 'Liste'
         },
         events: [], // Initialisation vide des événements
@@ -858,6 +862,12 @@ export async function loadCalendarActivities() {
                 });
             });
             calendar.render();
+            const targetRow = document.querySelector(`[data-date=${todayFormatted}]`);
+            if (targetRow) {
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                console.log('Aucun élément trouvé pour cette date.');
+            }
         }
 
     } catch (error) {
