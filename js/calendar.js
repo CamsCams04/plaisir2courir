@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateEventModal(info.event);
             });
             populateSummaryModal(info.event);
-            summaryModal.hide();
         },
         dateClick: function (info) {
             const clickedDate = info.dateStr;
@@ -774,7 +773,7 @@ export async function loadCalendarActivities() {
             document.getElementById('edit_activity').addEventListener("click", () => {
                 populateEventModal(info.event);
             });
-            populateSummaryModal(info.event, summaryModal);
+            populateSummaryModal(info.event);
         },
         dateClick: function (info) {
             const clickedDate = info.dateStr;
