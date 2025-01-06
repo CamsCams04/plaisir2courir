@@ -98,15 +98,15 @@ document.getElementById('a_admin').addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    // const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-    if (isLoggedIn == 'true'){
-        setTimeout(function() {
-            window.location.hash = "#activities";
-            showSection('activities');
-            localStorage.setItem('isLoggedIn', 'false');
-        }, 250);
-    }    
+    // if (isLoggedIn == 'true'){
+    //     setTimeout(function() {
+    //         window.location.hash = "#activities";
+    //         showSection('activities');
+    //         localStorage.setItem('isLoggedIn', 'false');
+    //     }, 250);
+    // }    
     const hash = window.location.hash;
     if (hash === "#activities") {
         showSection('activities');
