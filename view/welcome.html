@@ -141,8 +141,29 @@
                 <input type="text" id="searchInput" class="form-control" placeholder="Rechercher par nom, prénom ou email" />
             </div>
             <h2>Liste ustilisateurs :</h2>
+
+            <div class="admin-tabs mb-2">
+                <button type="button" id="tab-active-btn" class="btn btn-outline-primary admin-tab-btn active">
+                    Comptes actifs
+                </button>
+                <button type="button" id="tab-disabled-btn" class="btn btn-outline-secondary admin-tab-btn">
+                    Comptes désactivés
+                </button>
+            </div>
+
             <div id="table_container">
-                <table class="table table-hover" id="table_admin">
+                <table class="admin-table table table-hover" id="table_admin">
+                    <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rôle</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <table class="admin-table table table-hover d-none" id="table_admin_disabled">
                     <thead>
                     <tr>
                         <th scope="col">Username</th>
@@ -474,6 +495,39 @@
             <div class="modal-footer">
                 <button id="btn_edit_role" class="btn btn-primary" data-bs-dismiss="modal">Enregistrer</button>
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale de confirmation générique (admin) -->
+<div class="modal fade" id="adminConfirmModal" tabindex="-1" aria-labelledby="adminConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adminConfirmModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminConfirmModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" id="adminConfirmModalCancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" id="adminConfirmModalConfirmBtn" class="btn btn-primary" data-bs-dismiss="modal">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'information (admin) -->
+<div class="modal fade" id="adminFeedbackModal" tabindex="-1" aria-labelledby="adminFeedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adminFeedbackModalLabel">Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminFeedbackModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
