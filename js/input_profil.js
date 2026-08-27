@@ -3,6 +3,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, setDoc, doc, collection, query, where, getDocs, getDoc } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { beginLoading, endLoading } from './Classe/LoadingOverlay.js';
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -35,6 +36,8 @@ async function displayUserInfo(user) {
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des données utilisateur:', error);
+        } finally {
+            endLoading();
         }
     } else {
         console.error('Utilisateur non authentifié.');
@@ -44,11 +47,14 @@ async function displayUserInfo(user) {
 
 // Vérifier l'état de l'authentification au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
+    beginLoading("Chargement de votre profil...");
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
             displayUserInfo(user); // Appel de la fonction pour afficher les infos de l'utilisateur
         } else {
             console.log('Aucun utilisateur connecté.');
+            endLoading();
             window.location.href = 'login.html'; // Redirection si nécessaire
         }
     });

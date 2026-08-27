@@ -9,9 +9,15 @@
     <link rel="stylesheet" href="../css/profil.css">
     <link rel="stylesheet" href="../css/welcome.css">
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/email.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
+<div class="overlay" id="overlay" style="display: flex;">
+    <p id="mess_loader">Chargement de votre profil...</p>
+    <div class="loader"></div>
+</div>
+
 <!-- Header -->
 <header>
     <button class="open-btn" id="back-btn"><i class="fa-solid fa-arrow-left"></i></button>

@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebas
 import { getAuth, onAuthStateChanged, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, setDoc, doc, getDoc, collection, query, where, getDocs, writeBatch, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import {Telephone} from "./Classe/Telephone.js";
+import { beginLoading, endLoading } from "./Classe/LoadingOverlay.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -28,14 +29,19 @@ const disabledUsersList = [];
 // Évite de réinitialiser plusieurs fois le panneau admin si le document de l'utilisateur connecté change
 let adminPanelInitialized = false;
 
+// Évite de signaler la fin du chargement plusieurs fois (le rôle peut être vérifié à nouveau plus tard)
+let roleCheckResolved = false;
+
 document.addEventListener("DOMContentLoaded", () => {
+    beginLoading("Vérification de votre compte...");
+
     onAuthStateChanged(auth, (user) => {
         if (!user) return;
 
         const usersCollection = collection(db, "users");
         const queryUsers = query(usersCollection, where("id", "==", user.uid));
 
-        onSnapshot(queryUsers, (snapshot) => {
+        onSnapshot(queryUsers, async (snapshot) => {
             snapshot.forEach(async (docSnapshot) => {
                 const userRole = docSnapshot.data();
 
@@ -54,6 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     listenDisabledUsers(usersCollection);
                 }
             });
+
+            if (!roleCheckResolved) {
+                roleCheckResolved = true;
+                endLoading();
+            }
         });
     });
 });

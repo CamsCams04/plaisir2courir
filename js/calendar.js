@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebas
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId  } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import { sendEmailSuppr } from "./email.js";
+import { beginLoading, endLoading } from "./Classe/LoadingOverlay.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -21,6 +22,8 @@ const db = getFirestore(app);
 const date_modal = document.getElementById("activity-date");
 
 document.addEventListener('DOMContentLoaded', function () {
+    beginLoading("Chargement du calendrier...");
+
     let calendarEl = document.getElementById('calendar');
     let selectedDate = null;
     let selectedEvent = null;
@@ -330,6 +333,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Charger tous les événements depuis Firestore
     const eventsCollection = collection(db, 'events');
 
+    // Empêche de signaler la fin du chargement plusieurs fois (l'écoute continue en temps réel)
+    let eventsFirstLoadResolved = false;
+
     // Écoute en temps réel pour tous les événements
     onSnapshot(eventsCollection, (snapshot) => {
         // Supprimer tous les événements du calendrier avant de les recharger
@@ -350,8 +356,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 userId: eventData.userId
             });
         });
+
+        if (!eventsFirstLoadResolved) {
+            eventsFirstLoadResolved = true;
+            endLoading();
+        }
     }, (error) => {
         console.error('Erreur lors de la récupération des événements en temps réel:', error);
+        if (!eventsFirstLoadResolved) {
+            eventsFirstLoadResolved = true;
+            endLoading();
+        }
     });
 
 
