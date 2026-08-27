@@ -33,7 +33,7 @@ let adminPanelInitialized = false;
 let roleCheckResolved = false;
 
 document.addEventListener("DOMContentLoaded", () => {
-    beginLoading("Vérification de votre compte...");
+    beginLoading("Chargement du calendrier...");
 
     onAuthStateChanged(auth, (user) => {
         if (!user) return;

@@ -1,6 +1,6 @@
 // Importation des modules Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId  } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import { sendEmailSuppr } from "./email.js";
 import { beginLoading, endLoading } from "./Classe/LoadingOverlay.js";
@@ -20,6 +20,35 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const date_modal = document.getElementById("activity-date");
+
+// Référence vers l'instance du calendrier principal (onglet "Calendrier"), afin de
+// pouvoir recalculer sa taille depuis l'extérieur (voir refreshMainCalendarSize)
+// lorsqu'il redevient visible après avoir été caché.
+let mainCalendar = null;
+
+// Le calendrier principal est initialisé au chargement de la page, alors que son
+// conteneur peut être masqué (si un autre onglet est affiché par défaut). FullCalendar
+// calcule sa taille au moment du rendu : s'il est caché à ce moment-là, il s'affiche
+// ensuite écrasé/mal dimensionné. On corrige ça en recalculant sa taille juste après
+// que l'onglet "Calendrier" soit rendu visible (appelé depuis welcome.js).
+export function refreshMainCalendarSize() {
+    if (mainCalendar) {
+        mainCalendar.updateSize();
+    }
+}
+
+// Attend que Firebase ait fini de vérifier l'état de connexion (asynchrone) avant de
+// lire l'utilisateur courant. Utiliser directement auth.currentUser juste après le
+// chargement de la page peut renvoyer "null" par erreur, le temps que Firebase
+// retrouve la session enregistrée.
+function waitForAuthUser() {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        });
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     beginLoading("Chargement du calendrier...");
@@ -109,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    mainCalendar = calendar;
     calendar.render();
 
     function eventsAreEqual(event1, event2) {
@@ -733,8 +763,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Fonction pour charger les activités du calendrier
 export async function loadCalendarActivities() {
+    beginLoading("Chargement de vos activités...");
+
     let calendarEl = document.getElementById('calendar_activitie');
-    let noEventsMessage = document.getElementById('no-events-message'); // Éléments pour le message
 
     let selectedDate = null;
     let selectedEvent = null;
@@ -757,6 +788,18 @@ export async function loadCalendarActivities() {
             list: 'Liste'
         },
         events: [], // Initialisation vide des événements
+        // Contenu affiché par FullCalendar lui-même lorsque la période affichée (l'année)
+        // ne contient aucune activité. Se met à jour automatiquement à chaque changement
+        // d'année (précédent/suivant/aujourd'hui), sans code supplémentaire de notre part.
+        noEventsContent: function () {
+            return {
+                html:
+                    '<div class="no-events-message">' +
+                    '<h2>Vous n\'êtes inscrit(e) à aucune activité pour cette année.</h2>' +
+                    '<p>Direction le <a href="#" id="actToCal">calendrier</a> pour découvrir les prochaines activités et vous inscrire !</p>' +
+                    '</div>'
+            };
+        },
         eventDidMount: function (info) {
             const eventType = info.event.extendedProps.type;
             if (eventType) {
@@ -814,9 +857,11 @@ export async function loadCalendarActivities() {
         }
     });
 
+    calendar.render();
+
     // Récupérer les événements de Firestore
     try {
-        const user = auth.currentUser;
+        const user = await waitForAuthUser();
         if (!user) {
             console.error("L'utilisateur n'est pas connecté.");
             return;
@@ -829,21 +874,12 @@ export async function loadCalendarActivities() {
         // Obtenir les inscriptions de l'utilisateur
         const querySnapshot = await getDocs(queryRegistration);
 
-        if (querySnapshot.empty) {
-            console.log("Aucune inscription trouvée pour cet utilisateur.");
-            noEventsMessage.style.display = 'block'; // Afficher le message si aucune inscription
-            calendar.render();
-            return;
-        }
-
         // Collecter les IDs des événements auxquels l'utilisateur est inscrit
-        const eventIds = querySnapshot.docs.map(doc => doc.data().eventId);
+        const eventIds = [...new Set(querySnapshot.docs.map(doc => doc.data().eventId))];
 
         if (eventIds.length === 0) {
-            console.log("Aucun événement trouvé pour les inscriptions de l'utilisateur.");
-            noEventsMessage.style.display = 'block'; // Afficher le message si aucun événement
-            calendar.render();
-            return;
+            console.log("Aucune activité trouvée pour cet utilisateur.");
+            return; // Le calendrier reste vide, FullCalendar affiche le message via noEventsContent
         }
 
         // Référence à la collection des événements
@@ -855,38 +891,56 @@ export async function loadCalendarActivities() {
         // Obtenir les événements
         const eventsSnapshot = await getDocs(eventsQuery);
 
-        if (eventsSnapshot.empty) {
-            console.log("Aucun événement trouvé.");
-            noEventsMessage.style.display = 'block';
-        } else {
-            // Masquer le message s'il y a des événements
-            noEventsMessage.style.display = 'none';
-            eventsSnapshot.forEach((doc) => {
-                const eventData = doc.data();
-                calendar.addEvent({
-                    id: doc.id,
-                    title: eventData.title,
-                    start: eventData.start,
-                    end: eventData.end,
-                    description: eventData.description,
-                    location: eventData.location,
-                    extendedProps: {
-                        type: eventData.extendedProps.type
-                    },
-                    userId: eventData.userId
-                });
+        // On ajoute toutes les activités (passées et futures) : l'utilisateur peut
+        // naviguer d'année en année pour retrouver son historique. Le message
+        // "aucune activité" s'affiche automatiquement (via noEventsContent) uniquement
+        // pour les années qui n'en contiennent réellement aucune.
+        eventsSnapshot.forEach((doc) => {
+            const eventData = doc.data();
+            calendar.addEvent({
+                id: doc.id,
+                title: eventData.title,
+                start: eventData.start,
+                end: eventData.end,
+                description: eventData.description,
+                location: eventData.location,
+                extendedProps: {
+                    type: eventData.extendedProps.type
+                },
+                userId: eventData.userId
             });
-            calendar.render();
-            const targetRow = document.querySelector(`[data-date=${todayFormatted}]`);
+        });
+
+        // Se positionner sur la prochaine activité à venir (ou, à défaut, sur la plus
+        // récente activité passée) pour que l'utilisateur puisse scroller vers le haut
+        // pour voir le passé, et vers le bas pour voir la suite.
+        requestAnimationFrame(() => {
+            const dayRows = calendarEl.querySelectorAll('[data-date]');
+            let targetRow = null;
+
+            for (const row of dayRows) {
+                if (row.getAttribute('data-date') >= todayFormatted) {
+                    targetRow = row;
+                    break;
+                }
+            }
+
+            if (!targetRow && dayRows.length > 0) {
+                // Aucune activité à venir : on se positionne sur la dernière passée
+                targetRow = dayRows[dayRows.length - 1];
+            }
+
             if (targetRow) {
                 targetRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
-                console.log('Aucun élément trouvé pour cette date.');
+                console.log('Aucune activité à afficher pour se positionner dans le calendrier.');
             }
-        }
+        });
 
     } catch (error) {
         console.error("Erreur lors du chargement des activités du calendrier : ", error);
+    } finally {
+        endLoading();
     }
 
     function eventsAreEqual(event1, event2) {
@@ -1113,6 +1167,7 @@ export async function loadCalendarActivities() {
         const div_invite = document.getElementById("div_invite");
 
         if (isRegistered) {
+            registerButton.classList.remove("d-none");
             registerButton.textContent = "Se désinscrire";
             registerButton.classList.add('btn-outline-danger');
             registerButton.classList.remove('btn-outline-primary');

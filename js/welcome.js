@@ -1,4 +1,4 @@
-import {loadCalendarActivities} from "./calendar.js";
+import {loadCalendarActivities, refreshMainCalendarSize} from "./calendar.js";
 
 document.getElementById('open-btn').addEventListener('click', function() {
     document.getElementById('sidebar').style.left = '0';
@@ -13,6 +13,16 @@ const section_calendar = document.getElementById('section_calendar');
 const messaging = document.getElementById('messaging');
 const help = document.getElementById('help');
 
+document.getElementById('discover_activities').addEventListener('click', () => {
+    const pathname = location.pathname;
+    let pathname_split = pathname.split("/");
+    if (pathname_split[pathname_split.length - 1] === "profil.html") {
+        window.location.href = "./welcome.html#calendar";
+    } else {
+        showSection('section_calendar');
+    }
+});
+
 function showSection(sectionId) {
     activities.style.display = 'none';
     section_calendar.style.display = 'none';
@@ -23,6 +33,11 @@ function showSection(sectionId) {
     document.getElementById('sidebar').style.left = '-250px';
     if(sectionId === "activities"){
         loadCalendarActivities();
+    }
+    if (sectionId === "section_calendar") {
+        // Le calendrier principal a été initialisé pendant que cet onglet était
+        // masqué : on recalcule sa taille maintenant qu'il redevient visible.
+        refreshMainCalendarSize();
     }
 }
 
@@ -66,7 +81,14 @@ document.getElementById('a_help').addEventListener('click', () => {
     }
 });
 
-document.getElementById('actToCal').addEventListener('click', () => {
+// Le lien "calendrier" du message "aucune activité" est généré dynamiquement par
+// FullCalendar (noEventsContent), donc on écoute les clics au niveau du document
+// plutôt que sur l'élément lui-même, qui n'existe pas forcément encore au chargement.
+document.addEventListener('click', (e) => {
+    const activityLink = e.target.closest('#actToCal');
+    if (!activityLink) return;
+
+    e.preventDefault();
     const pathname = location.pathname;
     let pathname_split = pathname.split("/");
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
@@ -116,9 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('messaging');
     } else if (hash === "#help") {
         showSection('help');
-    }
-    else if (hash === "#admin") {
-        showSection('admin');
+    } else if (hash === "#admin") {
+        showSection('section_admin');
+    } else {
+        // Arrivée normale sur le site (pas de lien direct vers un onglet précis) :
+        // on affiche "Mes activités" par défaut.
+        showSection('activities');
     }
 });
 

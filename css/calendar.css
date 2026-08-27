@@ -15,8 +15,7 @@
     color: #57aec9 !important;
 }
 
-#no-events-message{
-    display: none;
+.no-events-message{
     text-align: center;
     margin-top: 20px;
 }
