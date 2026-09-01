@@ -30,7 +30,6 @@
 <div id="sidebar" class="sidebar">
     <button class="close-btn" id="close-btn"><i class="fa-sharp fa-regular fa-circle-xmark"></i></button>
     <ul>
-        <li><a href="#" id="a_activities">Mes Activités</a></li>
         <li><a href="#" id="a_calendar">Calendrier</a></li>
         <li><a href="#" id="a_messaging">Messagerie</a></li>
         <li><a href="#" id="a_help">Aide</a></li>
@@ -40,31 +39,10 @@
 
 <!-- Main Content -->
 <div id="main-content">
-    <div class="overlay" id="overlay">
-        <p id="mess_loader"></p>
+    <div class="overlay" id="overlay" style="display: flex;">
+        <p id="mess_loader">Chargement de votre espace...</p>
         <div class="loader"></div>
     </div>
-    <section id="activities" style="display: none">
-        <div id='calendar_activitie'>
-            <div id="no-events-message" style="">
-                <h2>Vous n'êtes inscrit(e) à aucun événement. Rendez-vous sur le <p id="actToCal">calendrier</p></h2>
-            </div>
-        </div>
-        <!-- Languette pour ouvrir la légende -->
-        <div id="legend-toggle-activitie" title="Afficher la légende">
-            <i class="fa-solid fa-info-circle"></i>
-        </div>
-
-        <!-- Légende des types d'événements -->
-        <div id="event-legend-activitie" style="display: none;">
-            <h5>Légende des Types</h5>
-            <ul>
-                <li><span class="badge réunion"></span> Réunion</li>
-                <li><span class="badge entrainement"></span> Entraînement</li>
-                <li><span class="badge compétition"></span> Compétition</li>
-            </ul>
-        </div>
-    </section>
     <section id="section_calendar">
         <button id="add_activity" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityModal">
             <i class="fa-solid fa-circle-plus"></i> Ajouter Activité
@@ -125,7 +103,7 @@
             <form id="bug-report-form">
                 <label for="bug-description">Description du Bug:</label><br>
                 <textarea id="bug-description" name="bug-description" required></textarea><br><br>
-                <input type="hidden" name="_replyto" value="noreplyplaisir2courir@gmail.com">
+                <input type="hidden" name="_replyto" value="morfincamille@gmail.com">
             </form>
             <button id="submit-bug" class="btn btn-primary">Envoyer !</button>
             <div id="form-feedback"></div>
@@ -141,8 +119,29 @@
                 <input type="text" id="searchInput" class="form-control" placeholder="Rechercher par nom, prénom ou email" />
             </div>
             <h2>Liste ustilisateurs :</h2>
+
+            <div class="admin-tabs mb-2">
+                <button type="button" id="tab-active-btn" class="btn btn-outline-primary admin-tab-btn active">
+                    Comptes actifs
+                </button>
+                <button type="button" id="tab-disabled-btn" class="btn btn-outline-secondary admin-tab-btn">
+                    Comptes désactivés
+                </button>
+            </div>
+
             <div id="table_container">
-                <table class="table table-hover" id="table_admin">
+                <table class="admin-table table table-hover" id="table_admin">
+                    <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rôle</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <table class="admin-table table table-hover d-none" id="table_admin_disabled">
                     <thead>
                     <tr>
                         <th scope="col">Username</th>
@@ -474,6 +473,39 @@
             <div class="modal-footer">
                 <button id="btn_edit_role" class="btn btn-primary" data-bs-dismiss="modal">Enregistrer</button>
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale de confirmation générique (admin) -->
+<div class="modal fade" id="adminConfirmModal" tabindex="-1" aria-labelledby="adminConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adminConfirmModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminConfirmModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" id="adminConfirmModalCancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" id="adminConfirmModalConfirmBtn" class="btn btn-primary" data-bs-dismiss="modal">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'information (admin) -->
+<div class="modal fade" id="adminFeedbackModal" tabindex="-1" aria-labelledby="adminFeedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adminFeedbackModalLabel">Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminFeedbackModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
