@@ -136,10 +136,52 @@ body {
     }
 }
 
-#section_calendar, #messaging, #section_admin {
+#section_calendar, #messaging, #section_admin, #section_event, #section_participants {
     position: relative;
     max-width: 1100px;
     margin: 0 auto;
+}
+
+#div_event, #div_participants {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 50px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#div_participants {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+#participants-pinned-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #fff;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+    z-index: 5;
+}
+
+#participants-event-datetime {
+    color: #666;
+}
+
+/* Appliqué explicitement au conteneur .row et à ses colonnes (display:flex de
+   Bootstrap) car text-decoration ne se propage pas de façon fiable à travers
+   des enfants flex : le poser seulement sur le <li> ne suffit pas visuellement. */
+.list-group-item-cancelled,
+.list-group-item-cancelled .row,
+.list-group-item-cancelled .col-auto {
+    text-decoration: line-through;
+    color: #888;
 }
 
 #add_activity {

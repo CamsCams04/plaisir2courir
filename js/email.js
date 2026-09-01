@@ -114,6 +114,7 @@ export async function sendEmailSuppr(selectedEvent) {
         const emails = [];
         for (const doc of querySnapshot.docs) {
             const data = doc.data();
+            if (data.cancelled) continue; // déjà désinscrit : pas besoin de le notifier
             // Créer une requête pour obtenir les détails de l'utilisateur avec l'userId
             const userQuery = query(collection(db, 'users'), where("id", "==", data.userId));
             const querySnapshotUser = await getDocs(userQuery); // Utiliser await ici

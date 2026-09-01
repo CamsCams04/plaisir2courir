@@ -1,4 +1,5 @@
 import {refreshMainCalendarSize} from "./calendar.js";
+import {showSection as navShowSection} from "./Classe/Navigation.js";
 
 document.getElementById('open-btn').addEventListener('click', function() {
     document.getElementById('sidebar').style.left = '0';
@@ -8,19 +9,8 @@ document.getElementById('close-btn').addEventListener('click', function() {
     document.getElementById('sidebar').style.left = '-250px';
 });
 
-const section_calendar = document.getElementById('section_calendar');
-const messaging = document.getElementById('messaging');
-const help = document.getElementById('help');
-const section_admin = document.getElementById('section_admin');
-
 function showSection(sectionId) {
-    section_calendar.style.display = 'none';
-    messaging.style.display = 'none';
-    help.style.display = 'none';
-    section_admin.style.display = 'none';
-
-    document.getElementById(sectionId).style.display = 'block';
-    document.getElementById('sidebar').style.left = '-250px';
+    navShowSection(sectionId);
     if (sectionId === "section_calendar") {
         // Le calendrier principal a été initialisé pendant que cet onglet était
         // masqué : on recalcule sa taille maintenant qu'il redevient visible.
