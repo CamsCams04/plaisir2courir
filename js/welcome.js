@@ -11,11 +11,13 @@ document.getElementById('close-btn').addEventListener('click', function() {
 const section_calendar = document.getElementById('section_calendar');
 const messaging = document.getElementById('messaging');
 const help = document.getElementById('help');
+const section_admin = document.getElementById('section_admin');
 
 function showSection(sectionId) {
     section_calendar.style.display = 'none';
     messaging.style.display = 'none';
     help.style.display = 'none';
+    section_admin.style.display = 'none';
 
     document.getElementById(sectionId).style.display = 'block';
     document.getElementById('sidebar').style.left = '-250px';
