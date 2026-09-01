@@ -1,4 +1,4 @@
-import {loadCalendarActivities, refreshMainCalendarSize} from "./calendar.js";
+import {refreshMainCalendarSize} from "./calendar.js";
 
 document.getElementById('open-btn').addEventListener('click', function() {
     document.getElementById('sidebar').style.left = '0';
@@ -8,48 +8,23 @@ document.getElementById('close-btn').addEventListener('click', function() {
     document.getElementById('sidebar').style.left = '-250px';
 });
 
-const activities = document.getElementById('activities');
 const section_calendar = document.getElementById('section_calendar');
 const messaging = document.getElementById('messaging');
 const help = document.getElementById('help');
 
-document.getElementById('discover_activities').addEventListener('click', () => {
-    const pathname = location.pathname;
-    let pathname_split = pathname.split("/");
-    if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#calendar";
-    } else {
-        showSection('section_calendar');
-    }
-});
-
 function showSection(sectionId) {
-    activities.style.display = 'none';
     section_calendar.style.display = 'none';
     messaging.style.display = 'none';
     help.style.display = 'none';
 
     document.getElementById(sectionId).style.display = 'block';
     document.getElementById('sidebar').style.left = '-250px';
-    if(sectionId === "activities"){
-        loadCalendarActivities();
-    }
     if (sectionId === "section_calendar") {
         // Le calendrier principal a été initialisé pendant que cet onglet était
         // masqué : on recalcule sa taille maintenant qu'il redevient visible.
         refreshMainCalendarSize();
     }
 }
-
-document.getElementById('a_activities').addEventListener('click', () => {
-    const pathname = location.pathname;
-    let pathname_split = pathname.split("/");
-    if (pathname_split[pathname_split.length - 1] === "profil.html") {
-        window.location.href = "./welcome.html#activities";
-    } else {
-        showSection('activities');
-    }
-});
 
 document.getElementById('a_calendar').addEventListener('click', () => {
     const pathname = location.pathname;
@@ -104,7 +79,7 @@ document.getElementById('logo_title').addEventListener('click', () => {
     if (pathname_split[pathname_split.length - 1] === "profil.html") {
         window.location.href = "./welcome.html#calendar";
     } else {
-        showSection('section_calendar'); // Montre la section des activités
+        showSection('section_calendar'); // Montre le calendrier
     }
 });
 
@@ -120,19 +95,8 @@ document.getElementById('a_admin').addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // const isLoggedIn = localStorage.getItem('isLoggedIn');
-
-    // if (isLoggedIn == 'true'){
-    //     setTimeout(function() {
-    //         window.location.hash = "#activities";
-    //         showSection('activities');
-    //         localStorage.setItem('isLoggedIn', 'false');
-    //     }, 250);
-    // }    
     const hash = window.location.hash;
-    if (hash === "#activities") {
-        showSection('activities');
-    } else if (hash === "#calendar") {
+    if (hash === "#calendar") {
         showSection('section_calendar');
     } else if (hash === "#messaging") {
         showSection('messaging');
@@ -142,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('section_admin');
     } else {
         // Arrivée normale sur le site (pas de lien direct vers un onglet précis) :
-        // on affiche "Mes activités" par défaut.
-        showSection('activities');
+        // on affiche le Calendrier par défaut.
+        showSection('section_calendar');
     }
 });
 
