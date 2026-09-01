@@ -72,7 +72,7 @@ function sendEmailBug(mail, lastname, firstname){
     const email = new Email(
         mail,
         "bug",
-        "noreplyplaisir2courir@gmail.com",
+        "morfincamille@gmail.com",
         {
             redirectUrl: "https://camscams04.github.io/plaisir2courir/view/redirectEmail",
             message: document.getElementById("bug-description").value,

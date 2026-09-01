@@ -33,3 +33,20 @@
     color: white;
     font-size: 2rem;
 }
+
+@media (max-width: 600px) {
+    .overlay {
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    #mess_loader {
+        font-size: 1.3rem;
+    }
+
+    .loader {
+        width: 45px;
+        height: 45px;
+        border-width: 6px;
+    }
+}
