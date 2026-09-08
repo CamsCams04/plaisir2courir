@@ -154,6 +154,81 @@
             </div>
         </div>
     </section>
+
+    <!-- Détail d'une sortie (remplace l'ancienne modale eventSummaryModal) -->
+    <section id="section_event" style="display: none">
+      <div id="div_event">
+        <button type="button" class="btn btn-secondary" id="close_header">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+        </button>
+        <h5 class="text-center w-100 font-weight-bold">
+            <span id="summary-name"></span>
+        </h5>
+        <dl class="row">
+            <dt class="col-sm-4">Type :</dt>
+            <dd class="col-sm-8" id="summary-type"></dd>
+
+            <dt class="col-sm-4">Date :</dt>
+            <dd class="col-sm-8" id="summary-date"></dd>
+
+            <dt class="col-sm-4">Heure de début :</dt>
+            <dd class="col-sm-8" id="summary-start-time"></dd>
+
+            <dt class="col-sm-4">Heure de fin :</dt>
+            <dd class="col-sm-8" id="summary-end-time"></dd>
+
+            <dt class="col-sm-4">Lieu :</dt>
+            <dd class="col-sm-8" id="summary-location"></dd>
+
+            <dt class="col-sm-4">Description :</dt>
+            <dd class="col-sm-8" id="summary-description"></dd>
+
+            <dt class="col-sm-4">Nombre d'inscription :</dt>
+            <dd class="col-sm-8" id="summary-inscription"></dd>
+
+            <dt class="col-sm-4">Liste des inscrits :</dt>
+            <dd class="col-sm-8" id="summary-list-inscription">
+                <button class="btn btn-outline-primary" id="btn-list-inscription">Visualiser !</button>
+            </dd>
+
+            <dt class="col-sm-4">Créateur :</dt>
+            <dd class="col-sm-8" id="summary-creator"></dd>
+        </dl>
+        <div class="mb-3 d-flex align-items-center">
+            <button id="register_event" class="btn btn-outline-primary me-2">S'inscrire</button>
+            <div class="row g-3 align-items-center d-none" id="div_invite">
+                <div class="col-auto">
+                    <label for="activity-invite" class="col-form-label">Invité(s) :</label>
+                </div>
+                <div class="col-auto">
+                    <input type="number" id="activity-invite" value="0" class="form-control" max="10" min="0">
+                </div>
+            </div>
+        </div>
+        <div>
+            <button id="edit_activity" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#activityEditModal">
+                <i class="fa-solid fa-edit"></i> Modifier Activité
+            </button>
+            <button id="delete_activity" class="btn btn-danger d-none">
+                <i class="fa-solid fa-trash"></i> Supprimer Activité
+            </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Liste des participants d'une sortie (remplace l'ancienne modale listInscriptionModal) -->
+    <section id="section_participants" style="display: none">
+      <div id="div_participants">
+        <div id="participants-pinned-header">
+            <button type="button" class="btn btn-secondary" id="btn-retour-participants-header">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </button>
+            <span id="participants-event-name"></span>
+            <span id="participants-event-datetime"></span>
+        </div>
+        <div id="body_list"></div>
+      </div>
+    </section>
 </div>
 
 <div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
@@ -325,74 +400,6 @@
     </div>
 </div>
 
-<!-- Modal pour afficher le résumé de l'activité -->
-<div class="modal fade" id="eventSummaryModal" tabindex="-1" aria-labelledby="eventSummaryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-center w-100 font-weight-bold" id="eventSummaryModalLabel">
-                    <span id="summary-name" class=""></span>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close_header"></button>
-            </div>
-            <div class="modal-body">
-                <dl class="row">
-                    <dt class="col-sm-4">Type :</dt>
-                    <dd class="col-sm-8" id="summary-type"></dd>
-
-                    <dt class="col-sm-4">Date :</dt>
-                    <dd class="col-sm-8" id="summary-date"></dd>
-
-                    <dt class="col-sm-4">Heure de début :</dt>
-                    <dd class="col-sm-8" id="summary-start-time"></dd>
-
-                    <dt class="col-sm-4">Heure de fin :</dt>
-                    <dd class="col-sm-8" id="summary-end-time"></dd>
-
-                    <dt class="col-sm-4">Lieu :</dt>
-                    <dd class="col-sm-8" id="summary-location"></dd>
-
-                    <dt class="col-sm-4">Description :</dt>
-                    <dd class="col-sm-8" id="summary-description"></dd>
-
-                    <dt class="col-sm-4">Nombre d'inscription :</dt>
-                    <dd class="col-sm-8" id="summary-inscription"></dd>
-
-                    <dt class="col-sm-4">Liste des inscrits :</dt>
-                    <dd class="col-sm-8" id="summary-list-inscription">
-                        <button class="btn btn-outline-primary" id="btn-list-inscription">Visualiser !</button>
-                    </dd>
-
-                    <dt class="col-sm-4">Créateur :</dt>
-                    <dd class="col-sm-8" id="summary-creator"></dd>
-                </dl>
-                <div class="mb-3 d-flex align-items-center">
-                    <button id="register_event" class="btn btn-outline-primary me-2">S'inscrire</button>
-                    <div class="row g-3 align-items-center d-none" id="div_invite">
-                        <div class="col-auto">
-                            <label for="activity-invite" class="col-form-label">Invité(s) :</label>
-                        </div>
-                        <div class="col-auto">
-                            <input type="number" id="activity-invite" value="0" class="form-control" max="10" min="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="edit_activity" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#activityEditModal">
-                    <i class="fa-solid fa-edit"></i> Modifier Activité
-                </button>
-                <button id="delete_activity" class="btn btn-danger d-none">
-                    <i class="fa-solid fa-trash"></i> Supprimer Activité
-                </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close_footer">
-                    <i class="fa-solid fa-xmark"></i> Fermer
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Modal de Confirmation pour Suppression -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -416,23 +423,6 @@
     </div>
 </div>
 
-<!-- Modal d'affichage des inscrits -->
-<div class="modal fade" id="listInscriptionModal" tabindex="-1" aria-labelledby="listInscriptionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="listInscriptionModalLabel">Affichage des participants</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="body_list"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fa-solid fa-xmark"></i> Fermer
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Modale de modification utilisateur -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">

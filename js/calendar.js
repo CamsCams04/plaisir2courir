@@ -1,9 +1,10 @@
 // Importation des modules Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
-import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId  } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, documentId, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
 import { sendEmailSuppr } from "./email.js";
 import { beginLoading, endLoading } from "./Classe/LoadingOverlay.js";
+import { showSection } from "./Classe/Navigation.js";
 
 // Configuration de Firebase
 const firebaseConfig = {
@@ -56,6 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
     let selectedDate = null;
     let selectedEvent = null;
+    let unsubscribeParticipants = null;
+    let participantsRenderToken = 0;
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -110,8 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("edit_activity").classList.add("d-none");
                 document.getElementById("delete_activity").classList.add("d-none");
             }
-            const summaryModal = new bootstrap.Modal(document.getElementById('eventSummaryModal'));
-            summaryModal.show();
+            showSection('section_event');
 
             document.getElementById('edit_activity').addEventListener("click", () => {
                 populateEventModal(info.event);
@@ -189,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function populateSummaryModal(event) {
         const btn_close_header = document.getElementById("close_header");
-        const btn_close_footer = document.getElementById("close_footer");
         document.getElementById('summary-name').textContent = event.title || '';
         document.getElementById('summary-type').textContent = event.extendedProps.type || '';
         document.getElementById('summary-location').textContent = event.extendedProps.location || '';
@@ -220,13 +221,16 @@ document.addEventListener('DOMContentLoaded', function () {
             // Écoute en temps réel
             onSnapshot(eventRegistrationsQuery, (snapshot) => {
                 let totalInvite = 0;
+                let activeCount = 0;
                 snapshot.forEach((doc) => {
                     const registration = doc.data();
+                    if (registration.cancelled) return; // désinscrit : ne compte plus dans le total
+                    activeCount++;
                     totalInvite += parseInt(registration.nbInvite || 0, 10); // Conversion en nombre pour éviter les erreurs
                 });
 
                 console.log("Total nbInvite :", totalInvite);
-                document.getElementById("summary-inscription").textContent = snapshot.size + totalInvite;
+                document.getElementById("summary-inscription").textContent = activeCount + totalInvite;
 
                 // Vérifier si l'utilisateur est inscrit
                 if (!querySnapshotUserRegister.empty) {
@@ -314,16 +318,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Erreur lors de la mise à jour de nbInvite:', error);
             }
 
+            showSection('section_calendar');
+            calendar.updateSize();
+
             // Supprimez l'écouteur d'événement une fois qu'il est utilisé
-            [btn_close_header, btn_close_footer].forEach((btn) => {
-                btn.removeEventListener("click", handleClose);
-            });
+            btn_close_header.removeEventListener("click", handleClose);
         };
 
-        // Ajoutez l'écouteur d'événement pour les deux boutons
-        [btn_close_header, btn_close_footer].forEach((btn) => {
-            btn.addEventListener("click", handleClose);
-        });
+        btn_close_header.addEventListener("click", handleClose);
     }
 
 
@@ -332,7 +334,10 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const userId = auth.currentUser.uid;
             const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
-            return !registrationSnapshot.empty; // Retourne true si l'utilisateur est déjà inscrit
+            // Une inscription annulée (désinscription) ne compte pas comme "inscrit" :
+            // on filtre côté client car un where('cancelled','==',false) exclurait à
+            // tort les inscriptions créées avant l'ajout de ce champ.
+            return registrationSnapshot.docs.some((docSnapshot) => !docSnapshot.data().cancelled);
         } catch (error) {
             console.error('Erreur lors de la vérification de l\'inscription:', error);
             return false;
@@ -590,51 +595,101 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error("Aucun événement sélectionné ou l'ID de l'événement est manquant.");
             return;
         }
-        // Effacer le contenu précédent avant d'ajouter de nouveaux éléments
-        let body_modal = document.getElementById("body_list");
-        body_modal.innerHTML = ''; // Réinitialise le contenu du body_modal
 
-        let ul_list = document.createElement("ul");
-        ul_list.className = "list-group";
+        // En-tête épinglé : garder le contexte (date/heure de la sortie) visible
+        // en haut de l'écran des participants.
+        document.getElementById('participants-event-name').textContent = selectedEvent.title || '';
+        let participantsDateTime = '';
+        if (selectedEvent.start) {
+            const start = new Date(selectedEvent.start);
+            participantsDateTime = start.toLocaleDateString('fr-FR') + ' ' +
+                start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+        document.getElementById('participants-event-datetime').textContent = participantsDateTime;
+
+        const body_modal = document.getElementById("body_list");
+        body_modal.innerHTML = '';
+
+        // On ne garde qu'un seul écouteur actif à la fois sur la liste des participants.
+        if (unsubscribeParticipants) {
+            unsubscribeParticipants();
+        }
 
         const registrationsCollection = collection(db, 'registrations');
         const eventRegistrationsQuery = query(registrationsCollection, where('eventId', '==', selectedEvent.id));
 
-        onSnapshot(eventRegistrationsQuery, (snapshot) => {
-            snapshot.forEach((doc) => {
-                const userRegister = doc.data();
+        unsubscribeParticipants = onSnapshot(eventRegistrationsQuery, async (snapshot) => {
+            // Chaque mise à jour Firestore (inscription/désinscription) redéclenche ce
+            // callback. Comme il est asynchrone (résolution des noms d'utilisateurs),
+            // rien ne garantit qu'un appel plus ancien ne se termine pas APRÈS un appel
+            // plus récent. On identifie chaque appel par un jeton et on ignore le
+            // résultat s'il n'est plus le plus récent, pour ne pas réafficher une
+            // version périmée (ex : un participant qui vient de se désinscrire
+            // réapparaîtrait non barré).
+            const renderToken = ++participantsRenderToken;
 
-                const usersCollection = collection(db, "users");
-                const userRegistrationQuery = query(usersCollection, where("id", "==", userRegister.userId));
+            const rows = await Promise.all(snapshot.docs.map(async (regDoc) => {
+                const registration = regDoc.data();
+                const userSnapshot = await getDocs(query(collection(db, 'users'), where('id', '==', registration.userId)));
+                const user = userSnapshot.empty ? null : userSnapshot.docs[0].data();
+                return { registration, user };
+            }));
 
-                onSnapshot(userRegistrationQuery, (snapshotUser) => {
-                    snapshotUser.forEach((docUser) => {
-                        const user = docUser.data();
+            if (renderToken !== participantsRenderToken) {
+                return; // une snapshot plus récente est arrivée entre-temps, on ignore ce résultat périmé
+            }
 
-                        let li_list_user = document.createElement("li");
-                        li_list_user.className = "list-group-item";
-                        li_list_user.innerHTML = `
+            // Tri par ordre d'inscription. Une inscription sans date (créée avant
+            // l'ajout de ce champ) est traitée comme la plus ancienne.
+            rows.sort((a, b) => {
+                const timeA = a.registration.registeredAt ? a.registration.registeredAt.toMillis() : 0;
+                const timeB = b.registration.registeredAt ? b.registration.registeredAt.toMillis() : 0;
+                return timeA - timeB;
+            });
+
+            body_modal.innerHTML = '';
+            const ul_list = document.createElement("ul");
+            ul_list.className = "list-group";
+
+            rows.forEach(({ registration, user }) => {
+                if (!user) return; // inscription orpheline (utilisateur introuvable)
+
+                const regDate = registration.registeredAt ? registration.registeredAt.toDate() : null;
+                const dateStr = regDate
+                    ? regDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' +
+                      regDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                    : '';
+
+                const li_list_user = document.createElement("li");
+                li_list_user.className = "list-group-item" + (registration.cancelled ? " list-group-item-cancelled" : "");
+                li_list_user.innerHTML = `
                     <div class="row d-flex justify-content-between">
                         <div class="col-auto">
                             ${user.lastname.toUpperCase()} ${user.firstname}
                         </div>
                         <div class="col-auto text-secondary">
-                            Nb d'invité(s) : ${userRegister.nbInvite}
+                            ${dateStr}
+                        </div>
+                        <div class="col-auto text-secondary">
+                            Nb d'invité(s) : ${registration.nbInvite}
                         </div>
                     </div>
                 `;
 
-                        ul_list.appendChild(li_list_user);
-                    });
-                });
+                ul_list.appendChild(li_list_user);
             });
 
-            body_modal.appendChild(ul_list)
+            body_modal.appendChild(ul_list);
         }, (error) => {
             console.error("Erreur lors de la récupération des inscriptions en temps réel:", error);
         });
-        const modalInscription = new bootstrap.Modal(document.getElementById('listInscriptionModal'));
-        modalInscription.show();
+
+        showSection('section_participants');
+    });
+
+    // Bouton de retour de l'écran des participants vers l'écran de la sortie.
+    document.getElementById('btn-retour-participants-header').addEventListener("click", () => {
+        showSection('section_event');
     });
 
     // Fonction pour supprimer un événement
@@ -647,8 +702,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const eventRef = doc(db, 'events', eventId);
                     await deleteDoc(eventRef);
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('eventSummaryModal'));
-                    modal.hide();
+                    showSection('section_calendar');
+                    calendar.updateSize();
                     sendEmailSuppr(selectedEvent);
                     selectedEvent.remove();
                     selectedEvent = null;
@@ -678,12 +733,29 @@ document.addEventListener('DOMContentLoaded', function () {
     async function subscribeToEvent(eventId) {
         try {
             const userId = auth.currentUser.uid;
-            const nbInvite = document.getElementById("activity-invite").value;
-            await addDoc(collection(db, 'registrations'), {
-                userId: userId,
-                eventId: eventId,
-                nbInvite : parseInt(nbInvite)
-            });
+            const nbInvite = parseInt(document.getElementById("activity-invite").value, 10);
+            const registrationsCollection = collection(db, 'registrations');
+            const existingSnapshot = await getDocs(query(registrationsCollection, where('eventId', '==', eventId), where('userId', '==', userId)));
+
+            if (!existingSnapshot.empty) {
+                // Une inscription existe déjà (éventuellement annulée) pour cet
+                // utilisateur/événement : on la réactive au lieu d'en recréer une,
+                // avec une nouvelle date d'inscription (elle remonte dans l'ordre).
+                const existingDocRef = doc(db, 'registrations', existingSnapshot.docs[0].id);
+                await updateDoc(existingDocRef, {
+                    nbInvite: nbInvite,
+                    cancelled: false,
+                    registeredAt: serverTimestamp()
+                });
+            } else {
+                await addDoc(registrationsCollection, {
+                    userId: userId,
+                    eventId: eventId,
+                    nbInvite: nbInvite,
+                    cancelled: false,
+                    registeredAt: serverTimestamp()
+                });
+            }
             updateRegistrationButton(eventId); // Met à jour le bouton après inscription
         } catch (error) {
             console.error('Erreur lors de l\'inscription:', error);
@@ -698,7 +770,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const registrationSnapshot = await getDocs(query(collection(db, 'registrations'), where('eventId', '==', eventId), where('userId', '==', userId)));
             if (!registrationSnapshot.empty) {
                 const registrationId = registrationSnapshot.docs[0].id; // Récupérer l'ID du document d'inscription
-                await deleteDoc(doc(db, 'registrations', registrationId));
+                // On ne supprime plus le document : on le marque comme annulé pour
+                // qu'il reste visible (barré) dans la liste des participants.
+                await updateDoc(doc(db, 'registrations', registrationId), { cancelled: true });
                 updateRegistrationButton(eventId); // Met à jour le bouton après désinscription
             }
         } catch (error) {
